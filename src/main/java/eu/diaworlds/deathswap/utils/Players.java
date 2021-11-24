@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 public class Players {
 
     public static void hide(Player player) {
+        if (Bukkit.getOnlinePlayers().size() < 2) return;
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
             player.hidePlayer(DeathSwap.instance, onlinePlayer);
             onlinePlayer.hidePlayer(DeathSwap.instance, player);
@@ -16,6 +17,7 @@ public class Players {
     }
 
     public static void show(Player player) {
+        if (Bukkit.getOnlinePlayers().size() < 2) return;
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
             player.showPlayer(DeathSwap.instance, onlinePlayer);
             onlinePlayer.showPlayer(DeathSwap.instance, player);

@@ -1,6 +1,10 @@
 package eu.diaworlds.deathswap.utils.scoreboard;
 
 import eu.diaworlds.deathswap.Config;
+import eu.diaworlds.deathswap.DeathSwap;
+import eu.diaworlds.deathswap.arena.Arena;
+import eu.diaworlds.deathswap.player.DeadPlayer;
+import eu.diaworlds.deathswap.utils.collection.DList;
 import lombok.experimental.UtilityClass;
 import org.bukkit.entity.Player;
 
@@ -10,8 +14,10 @@ public class Board {
     public static void create(Player player) {
         if (!APIScoreboard.hasScore(player)) {
             APIScoreboard scoreboard = APIScoreboard.createScore(player);
-            scoreboard.setTitle(Config.SCOREBOARD_TITLE);
-            scoreboard.setSlotsFromList(Config.SCOREBOARD_TEXT);
+            scoreboard.setTitle(parse(player, Config.SCOREBOARD_TITLE));
+            DList<String> lines = new DList<>(Config.SCOREBOARD_TEXT);
+            lines.replaceAll(s -> parse(player, s));
+            scoreboard.setSlotsFromList(lines);
         }
     }
 
@@ -24,9 +30,21 @@ public class Board {
     public static void update(Player player) {
         if (APIScoreboard.hasScore(player)) {
             APIScoreboard scoreboard = APIScoreboard.getByPlayer(player);
-            scoreboard.setTitle(Config.SCOREBOARD_TITLE);
-            scoreboard.setSlotsFromList(Config.SCOREBOARD_TEXT);
+            scoreboard.setTitle(parse(player, Config.SCOREBOARD_TITLE));
+            DList<String> lines = new DList<>(Config.SCOREBOARD_TEXT);
+            lines.replaceAll(s -> parse(player, s));
+            scoreboard.setSlotsFromList(lines);
         }
+    }
+
+    private static String parse(Player player, String string) {
+        DeadPlayer deadPlayer = DeathSwap.instance.getPlayerLibrary().get(player);
+        Arena arena = deadPlayer.getArena();
+        return string
+                .replace("{game_time}", String.valueOf(arena.getGameTime()))
+                .replace("{swap_time}", String.valueOf(arena.getSwapTime()))
+                .replace("{arena_players}", String.valueOf(arena.getPlayers().size()))
+                ;
     }
 
 }

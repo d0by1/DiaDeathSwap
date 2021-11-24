@@ -89,6 +89,9 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void on(PlayerTeleportEvent e) {
+        if (e.getCause().equals(PlayerTeleportEvent.TeleportCause.PLUGIN) || e.getCause().equals(PlayerTeleportEvent.TeleportCause.COMMAND)) {
+            return;
+        }
         String toWorld = e.getTo().getWorld().getName();
         String fromWorld = e.getFrom().getWorld().getName();
         if (!toWorld.equals(fromWorld)) {

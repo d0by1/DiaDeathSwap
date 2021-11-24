@@ -4,7 +4,6 @@ import eu.diaworlds.deathswap.utils.Common;
 import eu.diaworlds.deathswap.utils.collection.DList;
 import eu.diaworlds.deathswap.utils.config.CFG;
 import eu.diaworlds.deathswap.utils.config.ConfigValue;
-import org.bukkit.Difficulty;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -22,7 +21,7 @@ public class Config {
      */
 
     @ConfigValue("difficulty")
-    public static Difficulty DIFFICULTY = Difficulty.HARD;
+    public static String DIFFICULTY = "HARD";
 
     @ConfigValue("spawn")
     public static String SPAWN = "world:0:100:0:0:180";
@@ -34,7 +33,7 @@ public class Config {
     public static String CHAT_FORMAT = "{prefix}{name}{suffix} &7» &f{message}";
 
     @ConfigValue("arena_count")
-    public static int ARENA_COUNT = 32;
+    public static int ARENA_COUNT = 36;
 
     @ConfigValue("swap_time")
     public static int SWAP_TIME = 120;
@@ -67,7 +66,7 @@ public class Config {
 
     @ConfigValue("messages.join_info")
     public static List<String> JOIN_INFO = new DList<>("",
-            "&c&lDEATHSWAP &7(1.0)\n",
+            "&f☠ &c&lDEATHSWAP &f☠ &7(1.0)\n",
             "",
             "&7&oKaždé 2 minuty si s protihráčem vyměníte lokace.",
             "&7&oTvým cílem je protihráče při výměně zabít tak, že",
@@ -108,16 +107,19 @@ public class Config {
     public static String STOP_ANNOUNCE = "{prefix}Server se ukončí za &b%1$d sekund!";
 
     @ConfigValue("messages.player_join")
-    public static String PLAYER_JOIN = "{prefix}%1$s &7se připojil. &b[%2$d/2]";
+    public static String PLAYER_JOIN = "{prefix}&c%1$s &7se připojil. &c[%2$d/2]";
 
     @ConfigValue("messages.player_quit")
-    public static String PLAYER_QUIT = "{prefix}%1$s &7se odpojil. &b[%2$d/2]";
+    public static String PLAYER_QUIT = "{prefix}&c%1$s &7se odpojil. &c[%2$d/2]";
 
     @ConfigValue("messages.game_ended_kick")
-    public static String GAME_ENDED_KICK = "{prefix}&bHra skončila.";
+    public static String GAME_ENDED_KICK = "{prefix}Hra skončila.";
 
     @ConfigValue("messages.no_arena_kick")
     public static String NO_ARENA_KICK = "{prefix}&cNebyla nalezena žádná volná hra...";
+
+    @ConfigValue("messages.server_restart_kick")
+    public static String SERVER_RESTART_KICK = "{prefix}&cServer se restartuje...";
 
     /*
      *  General Methods

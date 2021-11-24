@@ -10,12 +10,12 @@ import org.bukkit.entity.Player;
 
 @Getter
 @Setter
-public class DPlayer {
+public class DeadPlayer {
 
     private final Player parent;
     private Arena arena;
 
-    public DPlayer(Player parent) {
+    public DeadPlayer(Player parent) {
         this.parent = parent;
     }
 

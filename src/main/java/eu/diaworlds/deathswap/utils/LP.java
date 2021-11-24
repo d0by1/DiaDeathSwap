@@ -28,15 +28,17 @@ public class LP {
     }
 
     public static String getPrefix(Player player) {
-        if (LUCK_PERMS == null) return null;
         User user = getUser(player);
-        return user.getCachedData().getMetaData().getPrefix();
+        if (user == null) return "";
+        String prefix = user.getCachedData().getMetaData().getPrefix();
+        return prefix == null ? "" : prefix;
     }
 
     public static String getSuffix(Player player) {
-        if (LUCK_PERMS == null) return null;
         User user = getUser(player);
-        return user.getCachedData().getMetaData().getSuffix();
+        if (user == null) return "";
+        String suffix = user.getCachedData().getMetaData().getSuffix();
+        return suffix == null ? "" : suffix;
     }
 
 }

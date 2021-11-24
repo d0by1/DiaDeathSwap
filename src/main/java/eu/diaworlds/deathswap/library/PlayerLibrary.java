@@ -2,7 +2,7 @@ package eu.diaworlds.deathswap.library;
 
 import eu.diaworlds.deathswap.Config;
 import eu.diaworlds.deathswap.DeathSwap;
-import eu.diaworlds.deathswap.player.DPlayer;
+import eu.diaworlds.deathswap.player.DeadPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,32 +14,34 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerLibrary implements Listener {
 
-    private final Map<Player, DPlayer> playerMap = new ConcurrentHashMap<>();
+    private final Map<Player, DeadPlayer> playerMap = new ConcurrentHashMap<>();
 
     public PlayerLibrary() {
         DeathSwap.instance.registerListener(this);
     }
 
     public void destroy() {
-        for (DPlayer player : playerMap.values()) {
+        for (DeadPlayer player : playerMap.values()) {
             player.onQuit();
         }
     }
 
-    public DPlayer get(Player player) {
+    public DeadPlayer get(Player player) {
         return playerMap.get(player);
     }
 
     public void join(Player player) {
         if (!playerMap.containsKey(player)) {
-            playerMap.put(player, new DPlayer(player));
-            playerMap.get(player).onJoin();
+            DeadPlayer deadPlayer = new DeadPlayer(player);
+            playerMap.put(player, deadPlayer);
+            deadPlayer.onJoin();
         }
     }
 
     public void quit(Player player) {
         if (playerMap.containsKey(player)) {
-            playerMap.remove(player).onQuit();
+            playerMap.get(player).onQuit();
+            playerMap.remove(player);
         }
     }
 

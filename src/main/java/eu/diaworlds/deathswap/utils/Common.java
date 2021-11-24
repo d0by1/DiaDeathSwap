@@ -15,8 +15,7 @@ import java.util.stream.Collectors;
 @UtilityClass
 public class Common {
 
-	public static final Pattern RGB_BRACKET_REGEX = Pattern.compile("[<{]#((?:[0-9a-fA-F]{3}){1,2})[}>]");
-	public static final Pattern RGB_REGEX = Pattern.compile("(?<!\\\\)#((?:[0-9a-fA-F]{3}){1,2})");
+	public static final Pattern RGB_REGEX = Pattern.compile("[<{&]?(#(?:[0-9a-fA-F]{3}){1,2})[}>]?");
 	public static final Pattern GRADIENT_REGEX = Pattern.compile("[<{]#([A-Fa-f0-9]){6}[>}][^<]+[<{]/#([A-Fa-f0-9]){6}[>}]");
 
 	public static int irand(int f, int t) {
@@ -29,22 +28,13 @@ public class Common {
 
 	public static String colorize(String string) {
 		try {
-			Matcher hexBracketMatcher = RGB_BRACKET_REGEX.matcher(string);
-			while (hexBracketMatcher.find()) {
-				final ChatColor hexColor = Common.getChatColorFromHex(hexBracketMatcher.group().substring(1, hexBracketMatcher.group().length() - 1));
-				final String before = string.substring(0, hexBracketMatcher.start());
-				final String after = string.substring(hexBracketMatcher.end());
+			Matcher matcher = RGB_REGEX.matcher(string);
+			while (matcher.find()) {
+				final ChatColor hexColor = Common.getChatColorFromHex(matcher.group(1));
+				final String before = string.substring(0, matcher.start());
+				final String after = string.substring(matcher.end());
 				string = before + hexColor + after;
-				hexBracketMatcher = RGB_BRACKET_REGEX.matcher(string);
-			}
-
-			Matcher hexMatcher = RGB_REGEX.matcher(string);
-			while (hexMatcher.find()) {
-				final ChatColor hexColor = Common.getChatColorFromHex(hexMatcher.group());
-				final String before = string.substring(0, hexMatcher.start());
-				final String after = string.substring(hexMatcher.end());
-				string = before + hexColor + after;
-				hexMatcher = RGB_REGEX.matcher(string);
+				matcher = RGB_REGEX.matcher(string);
 			}
 		} catch (Exception ignored) {}
 		return ChatColor.translateAlternateColorCodes('&', string);

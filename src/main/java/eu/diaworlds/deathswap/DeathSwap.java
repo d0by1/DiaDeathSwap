@@ -4,6 +4,7 @@ import eu.diaworlds.deathswap.commands.DeadCommand;
 import eu.diaworlds.deathswap.commands.api.CommandManager;
 import eu.diaworlds.deathswap.library.ArenaLibrary;
 import eu.diaworlds.deathswap.library.PlayerLibrary;
+import eu.diaworlds.deathswap.player.PlayerListener;
 import eu.diaworlds.deathswap.tick.Ticker;
 import eu.diaworlds.deathswap.utils.BungeeUtils;
 import eu.diaworlds.deathswap.utils.Common;
@@ -11,10 +12,7 @@ import eu.diaworlds.deathswap.utils.Locations;
 import eu.diaworlds.deathswap.utils.WorldUtils;
 import eu.diaworlds.deathswap.utils.config.CFG;
 import lombok.Getter;
-import org.bukkit.Bukkit;
-import org.bukkit.GameRule;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -54,6 +52,8 @@ public final class DeathSwap extends JavaPlugin {
         this.playerLibrary = new PlayerLibrary();
         this.ticker = new Ticker();
 
+        registerListener(new PlayerListener());
+
         commandManager.registerMainCommand(new DeadCommand());
 
         // Run this when all worlds are ready
@@ -66,6 +66,9 @@ public final class DeathSwap extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            kick(player, Config.parse(Config.SERVER_RESTART_KICK));
+        }
         BungeeUtils.destroy();
         this.arenaLibrary.destroy();
         this.playerLibrary.destroy();
@@ -140,7 +143,13 @@ public final class DeathSwap extends JavaPlugin {
         WorldUtils.setupBorder(world, Config.ARENA_SIZE_BLOCKS);
         world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
         world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
-        world.setDifficulty(Config.DIFFICULTY);
+        Difficulty difficulty;
+        try {
+            difficulty = Difficulty.valueOf(Config.DIFFICULTY);
+        } catch (Throwable t) {
+            difficulty = Difficulty.HARD;
+        }
+        world.setDifficulty(difficulty);
     }
 
 }

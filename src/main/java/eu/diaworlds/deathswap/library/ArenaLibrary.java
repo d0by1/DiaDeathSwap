@@ -34,8 +34,9 @@ public class ArenaLibrary {
         if (world == null) return;
         Common.log("Initializing arenas...");
         float arenaSize2 = Config.ARENA_SIZE / 2f;
-        for (int x = 0; x < Config.ARENA_COUNT; x++) {
-            for (int y = 0; y < Config.ARENA_COUNT; y++) {
+        int arenaCountSqrt = (int) Math.sqrt(Config.ARENA_COUNT);
+        for (int x = 0; x < arenaCountSqrt; x++) {
+            for (int y = 0; y < arenaCountSqrt; y++) {
                 ArenaWorld arenaWorld = new ArenaWorld(world.getName(),
                         x * Config.ARENA_SIZE,
                         (x + 1) * Config.ARENA_SIZE,
@@ -50,7 +51,7 @@ public class ArenaLibrary {
             }
         }
         ready.set(true);
-        Common.log("Arenas initialized! (%d)", Config.ARENA_COUNT);
+        Common.log("Arenas initialized! (%d)", arenas.size());
     }
 
     public void destroy() {
@@ -71,7 +72,7 @@ public class ArenaLibrary {
     }
 
     public Optional<Arena> getIdealArena() {
-        return arenas.stream().filter(Arena::isWaiting).min((o1, o2) -> o1.getPlayers().size() > o2.getPlayers().size() ? 1 : 0);
+        return arenas.stream().filter(Arena::isWaiting).min((o1, o2) -> o1.getPlayers().size() >= o2.getPlayers().size() ? 0 : 1);
     }
 
     public Optional<Arena> getArena(Player player) {
