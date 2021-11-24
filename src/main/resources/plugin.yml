@@ -1,0 +1,7 @@
+name: DiaDeathSwap
+version: '${version}'
+main: eu.diaworlds.deathswap.DeathSwap
+api-version: 1.17
+prefix: '[DiaDeathSwap]'
+softdepend: [ PlaceholderAPI ]
+authors: [ d0by ]
