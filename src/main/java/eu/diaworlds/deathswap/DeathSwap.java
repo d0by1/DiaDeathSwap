@@ -1,6 +1,5 @@
 package eu.diaworlds.deathswap;
 
-import eu.decentsoftware.holograms.api.DecentHologramsAPI;
 import eu.diaworlds.deathswap.commands.DeadCommand;
 import eu.diaworlds.deathswap.commands.api.CommandManager;
 import eu.diaworlds.deathswap.library.ArenaLibrary;
