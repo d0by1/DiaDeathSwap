@@ -15,9 +15,8 @@ public class S {
         Bukkit.getScheduler().runTask(DeathSwap.instance, runnable);
     }
 
-    @SuppressWarnings("deprecation")
-    public static int ar(Runnable runnable, int interval) {
-        return Bukkit.getScheduler().scheduleAsyncRepeatingTask(DeathSwap.instance, runnable, 0, interval);
+    public static void ar(Runnable runnable, long interval) {
+        Bukkit.getScheduler().runTaskTimerAsynchronously(DeathSwap.instance, runnable, 0, interval);
     }
 
 }

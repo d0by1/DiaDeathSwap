@@ -1,7 +1,6 @@
 package eu.diaworlds.deathswap.tick;
 
 import eu.diaworlds.deathswap.DeathSwap;
-import eu.diaworlds.deathswap.utils.S;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,7 +12,6 @@ import java.util.concurrent.atomic.AtomicLong;
 @Setter
 public abstract class TickedObject implements Ticked {
 
-    private final AtomicLong lastTick;
     private final AtomicLong interval;
     private final AtomicInteger time;
     private final String id;
@@ -29,7 +27,6 @@ public abstract class TickedObject implements Ticked {
 
     public TickedObject(String id, int interval) {
         this.id = id;
-        this.lastTick = new AtomicLong(S.ms());
         this.interval = new AtomicLong(interval);
         this.time = new AtomicInteger(0);
         this.direction = Direction.INCREMENT;
@@ -40,6 +37,7 @@ public abstract class TickedObject implements Ticked {
         DeathSwap.instance.getTicker().unregister(getId());
     }
 
+    @Override
     public void tick() {
         if (isIncrement()) {
             time.incrementAndGet();
@@ -51,10 +49,7 @@ public abstract class TickedObject implements Ticked {
 
     public abstract void onTick();
 
-    public long getLastTick() {
-        return lastTick.get();
-    }
-
+    @Override
     public long getInterval() {
         return interval.get();
     }

@@ -22,8 +22,10 @@ import java.io.File;
 @Getter
 public final class DeathSwap extends JavaPlugin {
 
+    /**
+     * Running instance of the DeathSwap plugin.
+     */
     public static DeathSwap instance;
-
     private CommandManager commandManager;
     private ArenaLibrary arenaLibrary;
     private PlayerLibrary playerLibrary;
@@ -73,6 +75,13 @@ public final class DeathSwap extends JavaPlugin {
         this.arenaLibrary.destroy();
         this.playerLibrary.destroy();
         WorldUtils.deleteWorld("world");
+    }
+
+    /**
+     * Reload the configuration.
+     */
+    public void reload() {
+        Config.CONFIG = CFG.load(Config.class, getConfigFile());
     }
 
     /**

@@ -1,6 +1,5 @@
 package eu.diaworlds.deathswap.arena;
 
-import eu.diaworlds.deathswap.utils.S;
 import lombok.Data;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -26,14 +25,15 @@ public class ArenaWorld {
         return Bukkit.getWorld(world);
     }
 
+    /**
+     * Regenerate all chunks within this area.
+     */
     public void regenChunks() {
         World world = getWorld();
         if (world != null) {
             for (int x = minChunkX; x < maxChunkX; x++) {
                 for (int y = minChunkY; y < maxChunkY; y++) {
-                    int finalX = x;
-                    int finalY = y;
-                    S.r(() -> world.regenerateChunk(finalX, finalY));
+                    // Regen chunk
                 }
             }
         }

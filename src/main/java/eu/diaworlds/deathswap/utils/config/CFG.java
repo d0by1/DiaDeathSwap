@@ -67,11 +67,17 @@ public class CFG {
                 String key = f.getAnnotation(ConfigValue.class).value();
                 if (Modifier.isStatic(f.getModifiers())) {
                     try {
-                        f.set(null, config.get(key));
+                        Object o = config.get(key);
+                        if (o != null) {
+                            f.set(null, o);
+                        }
                     } catch (Throwable ignored) {}
                 } else if (!stat) {
                     try {
-                        f.set(object, config.get(key));
+                        Object o = config.get(key);
+                        if (o != null) {
+                            f.set(object, o);
+                        }
                     } catch (Throwable ignored) {}
                 }
             }

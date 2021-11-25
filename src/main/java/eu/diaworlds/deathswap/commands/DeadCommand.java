@@ -18,6 +18,7 @@ public class DeadCommand extends DecentCommand {
     public DeadCommand() {
         super("deathswap");
 
+        addSubCommand(new ReloadCommand());
         addSubCommand(new SetSpawnCommand());
     }
 
@@ -33,6 +34,36 @@ public class DeadCommand extends DecentCommand {
     @Override
     public TabCompleteHandler getTabCompleteHandler() {
         return null;
+    }
+
+    /*
+     *  Reload
+     */
+
+    @CommandInfo(
+            description = "Reload the plugins configuration.",
+            usage = "/deathswap reload",
+            permission = "dia.deathswap.admin"
+    )
+    public static class ReloadCommand extends DecentCommand {
+
+        public ReloadCommand() {
+            super("reload");
+        }
+
+        @Override
+        public CommandHandler getCommandHandler() {
+            return (sender, args) -> {
+                DeathSwap.instance.reload();
+                Common.tell(sender, Config.PREFIX + "&bSuccessfully reloaded!");
+                return true;
+            };
+        }
+
+        @Override
+        public TabCompleteHandler getTabCompleteHandler() {
+            return null;
+        }
     }
 
     /*

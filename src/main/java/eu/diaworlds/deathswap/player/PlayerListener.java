@@ -3,8 +3,6 @@ package eu.diaworlds.deathswap.player;
 import eu.diaworlds.deathswap.Config;
 import eu.diaworlds.deathswap.DeathSwap;
 import eu.diaworlds.deathswap.arena.Arena;
-import eu.diaworlds.deathswap.utils.Common;
-import eu.diaworlds.deathswap.utils.LP;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,9 +11,9 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 import java.util.Optional;
@@ -24,29 +22,14 @@ public class PlayerListener implements Listener {
 
     private boolean isNotInGame(Player player) {
         Optional<Arena> arena = DeathSwap.instance.getArenaLibrary().getArena(player);
-        return arena.map(Arena::isInGame).orElse(true);
+        return !arena.map(Arena::isInGame).orElse(false);
     }
 
     @EventHandler
-    public void onChat(AsyncPlayerChatEvent e) {
-        Player player = e.getPlayer();
-        Optional<Arena> arenaOptional = DeathSwap.instance.getArenaLibrary().getArena(player);
-        if (arenaOptional.isPresent()) {
-            Arena arena = arenaOptional.get();
-            String message = Common.colorize(Config.CHAT_FORMAT
-                    .replace("{name}", player.getName())
-                    .replace("{prefix}", LP.getPrefix(player))
-                    .replace("{suffix}", LP.getSuffix(player))
-                    .replace("{message}", e.getMessage())
-            );
-            arena.bc(message);
-        }
-        e.setMessage("");
-        e.setFormat("");
+    public void onKick(PlayerKickEvent e) {
         e.setCancelled(true);
+        DeathSwap.instance.kick(e.getPlayer(), Config.parse(Config.SERVER_RESTART_KICK));
     }
-
-
 
     @EventHandler
     public void onDamage(EntityDamageEvent e) {

@@ -5,25 +5,28 @@ import eu.diaworlds.deathswap.executor.MultiBurst;
 import eu.diaworlds.deathswap.utils.S;
 import eu.diaworlds.deathswap.utils.collection.DList;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class Ticker {
 
     private final DList<Ticked> ticklist;
     private final DList<Ticked> newTicks;
     private final DList<String> removeTicks;
+    private final AtomicLong ticks;
     private volatile boolean ticking;
 
     public Ticker() {
-        this.ticklist = new DList<>(2048);
-        this.newTicks = new DList<>(128);
-        this.removeTicks = new DList<>(128);
+        this.ticklist = new DList<>(512);
+        this.newTicks = new DList<>(64);
+        this.removeTicks = new DList<>(64);
+        this.ticks = new AtomicLong(0);
         this.ticking = false;
+
         S.ar(() -> {
             if (!ticking) {
                 tick();
             }
-        }, 0);
+        }, 1);
     }
 
     public void register(Ticked ticked) {
@@ -40,15 +43,13 @@ public class Ticker {
 
     private void tick() {
         ticking = true;
-        AtomicInteger tc = new AtomicInteger(0);
         BurstExecutor e = MultiBurst.burst.burst(ticklist.size());
         for(int i = 0; i < ticklist.size(); i++) {
             int ii = i;
             e.queue(() -> {
                 Ticked t = ticklist.get(ii);
 
-                if(t.shouldTick()) {
-                    tc.incrementAndGet();
+                if(t.shouldTick(ticks.get())) {
                     try {
                         t.tick();
                     } catch(Throwable exxx) {
@@ -62,16 +63,13 @@ public class Ticker {
 
         synchronized(newTicks) {
             while(newTicks.hasElements()) {
-                tc.incrementAndGet();
                 ticklist.add(newTicks.popRandom());
             }
         }
 
         synchronized(removeTicks) {
             while(removeTicks.hasElements()) {
-                tc.incrementAndGet();
                 String id = removeTicks.popRandom();
-
                 for (int i = 0; i < ticklist.size(); i++) {
                     if(ticklist.get(i).getId().equals(id)) {
                         ticklist.remove(i);
@@ -82,7 +80,7 @@ public class Ticker {
         }
 
         ticking = false;
-        tc.get();
+        ticks.incrementAndGet();
     }
 
 }

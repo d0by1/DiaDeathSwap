@@ -40,9 +40,11 @@ public class Board {
     private static String parse(Player player, String string) {
         DeadPlayer deadPlayer = DeathSwap.instance.getPlayerLibrary().get(player);
         Arena arena = deadPlayer.getArena();
+        if (arena == null) return string;
         return string
                 .replace("{game_time}", String.valueOf(arena.getGameTime()))
                 .replace("{swap_time}", String.valueOf(arena.getSwapTime()))
+                .replace("{arena_phase}", arena.getPhase().name())
                 .replace("{arena_players}", String.valueOf(arena.getPlayers().size()))
                 ;
     }

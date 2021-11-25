@@ -21,6 +21,9 @@ public class DeadPlayer {
 
     public void onJoin() {
         if (arena != null) return;
+        for (String line : Config.JOIN_INFO) {
+            parent.sendMessage(Config.parse(line));
+        }
         parent.teleport(DeathSwap.instance.getSpawn());
         Players.hide(parent);
         boolean joined = DeathSwap.instance.getArenaLibrary().joinIdealArena(parent);
