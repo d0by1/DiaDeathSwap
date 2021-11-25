@@ -145,13 +145,13 @@ public class Arena extends TickedObject implements Listener {
                 break;
             case IN_GAME:
                 t = getTime().get();
-                int gameTime = Config.GAME_TIME;
+                int gameTime = Config.GAME_TIME * 20;
                 if (t == gameTime) {
                     setPhase(Phase.ENDING);
                 } else if (shouldAnnounce(gameTime - t)) {
                     bc(String.format(Config.parse(Config.END_ANNOUNCE), gameTime - t));
                 } else {
-                    int swapTime = Config.SWAP_TIME;
+                    int swapTime = Config.SWAP_TIME * 20;
                     t = t % swapTime;
                     if (t == swapTime) {
                         S.r(this::swapPlayers);

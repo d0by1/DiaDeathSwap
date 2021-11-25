@@ -18,7 +18,7 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.22'
     annotationProcessor 'org.projectlombok:lombok:1.18.22'
     compileOnly 'net.luckperms:api:5.3'
-//    implementation 'com.github.DecentSoftware-eu.DecentHolograms:DecentHolograms:2.0.7'
+    implementation 'com.github.decentsoftware-eu:decentholograms:2.0.8'
 }
 
 compileJava {

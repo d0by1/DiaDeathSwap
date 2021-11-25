@@ -47,12 +47,12 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void on(BlockBreakEvent e) {
-        if (isNotInGame(e.getPlayer())) e.setCancelled(true);
+        if (isNotInGame(e.getPlayer()) || !e.getPlayer().getWorld().getName().equals("world")) e.setCancelled(true);
     }
 
     @EventHandler
     public void on(BlockPlaceEvent e) {
-        if (isNotInGame(e.getPlayer())) e.setCancelled(true);
+        if (isNotInGame(e.getPlayer()) || !e.getPlayer().getWorld().getName().equals("world")) e.setCancelled(true);
     }
 
     @EventHandler
