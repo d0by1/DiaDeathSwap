@@ -23,7 +23,7 @@ public class Common {
 	}
 
 	public static String formatSeconds(int seconds) {
-		return String.format("%2d:%2d", seconds / 60, seconds % 60);
+		return String.format("%d:%02d", seconds / 60, seconds % 60);
 	}
 
 	/*

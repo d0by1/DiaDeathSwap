@@ -99,12 +99,18 @@ public class Arena extends TickedObject implements Listener {
     }
 
     /**
-     * Just reset with a different name.
+     * Destroy and remove from ArenaLibrary.
+     */
+    public void remove() {
+        DeathSwap.instance.getArenaLibrary().removeArena(this);
+    }
+
+    /**
+     * Reset and unregister from ticker.
      */
     public void destroy() {
         reset();
         unregister(); // Unregister from ticker
-        DeathSwap.instance.getArenaLibrary().removeArena(this);
     }
 
     /**
@@ -228,7 +234,7 @@ public class Arena extends TickedObject implements Listener {
                     }
                 });
             case RESETTING:
-                this.destroy();
+                this.remove();
                 break;
         }
     }
