@@ -49,7 +49,7 @@ public class Config {
 
     @ConfigValue("scoreboard.text")
     public static List<String> SCOREBOARD_TEXT = new DList<>("",
-            "&3Arena:",
+            "&3Aréna:",
             "  &7Hráči: &b{arena_players}/2",
             "  &7Fáze: &b{arena_phase}",
             "  &7Čas hry: &b{game_time}",
@@ -87,11 +87,11 @@ public class Config {
     public static String PREFIX = "&8[&bDeathSwap&8] &7";
 
     @ConfigValue("messages.no_perm")
-    public static String NO_PERM = "{prefix}&cNa toto nemáš oprávnění.";
+    public static String NO_PERM = "{prefix}&bNa toto nemáš oprávnění.";
 
     @ConfigValue("messages.join_info")
     public static List<String> JOIN_INFO = new DList<>("",
-            "&f☠ &c&lDEATHSWAP &f☠ &7(v1.0)\n",
+            "&f☠ &3&l&nDEATHSWAP&f ☠ &7(v1.0)\n",
             "",
             " &f- Každé 2 minuty si s protihráčem vyměníte pozice.",
             " &fTvým cílem je protihráče při výměně zabít tak, že",
@@ -101,18 +101,24 @@ public class Config {
             "",
             " &f- Normální PVP je vypnuto.",
             "",
-            " &bNašel jsi nějaký bug? &7&nhttps://discord.diaworlds.eu/ \n"
+            " &bNašel jsi nějaký bug? &7&nhttps://discord.diaworlds.eu/",
+            ""
     );
 
     @ConfigValue("messages.game.end.winner")
     public static List<String> GAME_END_MESSAGE_WINNER = new DList<>("",
-            "Winner: {winner}",
+            "&f☠ &3&l&nDEATHSWAP &f☠ &7(v1.0)",
+            "",
+            "&fVyhrál: &b{winner}",
             ""
     );
 
     @ConfigValue("messages.game.end.time")
     public static List<String> GAME_END_MESSAGE_TIME = new DList<>("",
-            "Draw",
+            "&f☠ &3&l&nDEATHSWAP &f☠ &7(v1.0)",
+            "",
+            "&fVypršel čas hry.",
+            "&fNikdo nevyhrál - remíza.",
             ""
     );
 
