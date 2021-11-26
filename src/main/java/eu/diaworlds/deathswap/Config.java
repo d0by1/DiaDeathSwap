@@ -55,6 +55,28 @@ public class Config {
     );
 
     /*
+     *  Title
+     */
+
+    @ConfigValue("titles.end.winner.title")
+    public static String END_WINNER_TITLE = "&b&lVyhrál Jsi!";
+
+    @ConfigValue("titles.end.winner.subtitle")
+    public static String END_WINNER_SUBTITLE = "&fGratulujeme.";
+
+    @ConfigValue("title.end.loser.title")
+    public static String END_LOSER_TITLE = "&c&lHra skončila";
+
+    @ConfigValue("title.end.loser.subtitle")
+    public static String END_LOSER_SUBTITLE = "&fVyhrál &b{winner}";
+
+    @ConfigValue("title.end.draw.title")
+    public static String END_DRAW_TITLE = "&c&lHra skončila";
+
+    @ConfigValue("title.end.draw.subtitle")
+    public static String END_DRAW_SUBTITLE = "&fNikdo nevyhrál.";
+
+    /*
      *  Messages
      */
 

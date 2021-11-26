@@ -25,6 +25,17 @@ public class Area {
     }
 
     /**
+     * Check whether the given position is inside the area.
+     *
+     * @param x the X coordinate.
+     * @param y the Y coordinate.
+     * @return true if the position is inside, otherwise false.
+     */
+    public boolean isInside(int x, int y) {
+        return getMaxX() > x && getMinX() < x && getMaxY() > y && getMinY() < y;
+    }
+
+    /**
      * Get the maximum X position a player can reach.
      *
      * @return the maximum X position.

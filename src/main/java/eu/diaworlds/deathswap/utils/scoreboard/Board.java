@@ -4,6 +4,7 @@ import eu.diaworlds.deathswap.Config;
 import eu.diaworlds.deathswap.DeathSwap;
 import eu.diaworlds.deathswap.arena.Arena;
 import eu.diaworlds.deathswap.player.DeadPlayer;
+import eu.diaworlds.deathswap.utils.Common;
 import eu.diaworlds.deathswap.utils.collection.DList;
 import lombok.experimental.UtilityClass;
 import org.bukkit.entity.Player;
@@ -42,8 +43,8 @@ public class Board {
         Arena arena = deadPlayer.getArena();
         if (arena == null) return string;
         return string
-                .replace("{game_time}", String.valueOf(arena.getGameTime()))
-                .replace("{swap_time}", String.valueOf(arena.getSwapTime()))
+                .replace("{game_time}", Common.formatSeconds(arena.getGameTime()))
+                .replace("{swap_time}", Common.formatSeconds(arena.getSwapTime()))
                 .replace("{arena_phase}", arena.getPhase().name())
                 .replace("{arena_players}", String.valueOf(arena.getPlayers().size()))
                 ;

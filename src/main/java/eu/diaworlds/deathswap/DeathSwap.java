@@ -6,10 +6,7 @@ import eu.diaworlds.deathswap.library.ArenaLibrary;
 import eu.diaworlds.deathswap.library.PlayerLibrary;
 import eu.diaworlds.deathswap.player.PlayerListener;
 import eu.diaworlds.deathswap.tick.Ticker;
-import eu.diaworlds.deathswap.utils.BungeeUtils;
-import eu.diaworlds.deathswap.utils.Common;
-import eu.diaworlds.deathswap.utils.Locations;
-import eu.diaworlds.deathswap.utils.WorldUtils;
+import eu.diaworlds.deathswap.utils.*;
 import eu.diaworlds.deathswap.utils.config.CFG;
 import lombok.Getter;
 import org.bukkit.*;
@@ -141,6 +138,29 @@ public final class DeathSwap extends JavaPlugin {
     public void kick(Player player, String reason) {
         Common.tell(player, Config.parse(reason));
         BungeeUtils.connect(player, Config.LOBBY_SERVER);
+    }
+
+    /**
+     * Teleport given player to set spawn location.
+     *
+     * @param player the player.
+     */
+    public void spawn(Player player) {
+        teleport(player, getSpawn());
+    }
+
+    /**
+     * Teleport given player to the given location. Always teleported on the primary thread.
+     *
+     * @param player the player.
+     * @param location the location.
+     */
+    public void teleport(Player player, Location location) {
+        if (!Bukkit.isPrimaryThread()) {
+            S.r(() -> player.teleport(location));
+            return;
+        }
+        player.teleport(location);
     }
 
     /**

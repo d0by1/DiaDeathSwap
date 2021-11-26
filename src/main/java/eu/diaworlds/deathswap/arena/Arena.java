@@ -12,11 +12,13 @@ import eu.diaworlds.deathswap.utils.scoreboard.Board;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 
 @Getter
 @Setter
@@ -84,9 +86,9 @@ public class Arena extends TickedObject implements Listener {
      * @param player the player.
      */
     public void quit(Player player) {
+        setWinner(getOtherPlayer(player));
         Board.remove(player);
         DeathSwap.instance.getPlayerLibrary().get(player).setArena(null);
-        setWinner(getOtherPlayer(player));
         players.remove(player);
         bc(String.format(Config.parse(Config.PLAYER_QUIT), player.getName(), players.size()));
         if (isInGame()) {
@@ -101,6 +103,8 @@ public class Arena extends TickedObject implements Listener {
      */
     public void destroy() {
         reset();
+        unregister(); // Unregister from ticker
+        DeathSwap.instance.getArenaLibrary().removeArena(this);
     }
 
     /**
@@ -115,14 +119,6 @@ public class Arena extends TickedObject implements Listener {
         for (Player player : new DList<>(players)) {
             quit(player);
         }
-    }
-
-    /**
-     * Basically reset but also regenerates chunks.
-     */
-    public void resetFull() {
-        reset();
-        area.regenChunks();
     }
 
     @Override
@@ -140,7 +136,7 @@ public class Arena extends TickedObject implements Listener {
                 if (t == 0) {
                     setPhase(Phase.IN_GAME);
                 } else if (shouldAnnounce(t)) {
-                    bc(String.format(Config.parse(Config.START_ANNOUNCE), t));
+                    announce(String.format(Config.parse(Config.START_ANNOUNCE), t));
                 }
                 break;
             case IN_GAME:
@@ -149,14 +145,14 @@ public class Arena extends TickedObject implements Listener {
                 if (t == gameTime) {
                     setPhase(Phase.ENDING);
                 } else if (shouldAnnounce(gameTime - t)) {
-                    bc(String.format(Config.parse(Config.END_ANNOUNCE), gameTime - t));
+                    announce(String.format(Config.parse(Config.END_ANNOUNCE), gameTime - t));
                 } else {
                     int swapTime = Config.SWAP_TIME * 20;
                     t = t % swapTime;
                     if (t == swapTime) {
                         S.r(this::swapPlayers);
                     } else if (shouldAnnounce(swapTime - t)) {
-                        bc(String.format(Config.parse(Config.SWAP_ANNOUNCE), swapTime - t));
+                        announce(String.format(Config.parse(Config.SWAP_ANNOUNCE), swapTime - t));
                     }
                 }
                 break;
@@ -193,7 +189,7 @@ public class Arena extends TickedObject implements Listener {
                 this.phase = phase;
                 setDirection(Direction.INCREMENT);
                 getTime().set(0);
-                S.r(() -> players.forEach(p -> p.teleport(getCenter())));
+                players.forEach(this::center);
                 shouldTick = true;
                 return;
             case ENDING:
@@ -202,19 +198,39 @@ public class Arena extends TickedObject implements Listener {
                 setDirection(Direction.DECREMENT);
                 getTime().set(20);
                 shouldTick = true;
-                S.r(() -> players.forEach(p -> p.teleport(DeathSwap.instance.getSpawn())));
-                players.forEach(Players::heal);
-                if (winner != null) {
-                    for (String line : Config.END_MESSAGE_WINNER) {
-                        bc(Config.parse(line.replace("{winner}", winner.getName())));
+                players.forEach((p) -> {
+                    DeathSwap.instance.spawn(p);
+                    Players.heal(p);
+                    if (winner != null) {
+                        for (String line : Config.END_MESSAGE_WINNER) {
+                            Common.tell(p, Config.parse(line.replace("{winner}", winner.getName())));
+                        }
+                        if (winner.equals(p)) {
+                            p.sendTitle(
+                                    Config.parse(Config.END_WINNER_TITLE.replace("{winner}", winner.getName())),
+                                    Config.parse(Config.END_WINNER_SUBTITLE.replace("{winner}", winner.getName())),
+                                    20, 60, 20
+                            );
+                        } else {
+                            p.sendTitle(
+                                    Config.parse(Config.END_LOSER_TITLE.replace("{winner}", winner.getName())),
+                                    Config.parse(Config.END_LOSER_SUBTITLE.replace("{winner}", winner.getName())),
+                                    20, 60, 20
+                            );
+                        }
+                    } else {
+                        for (String line : Config.END_MESSAGE_TIME) {
+                            Common.tell(p, Config.parse(line));
+                        }
+                        p.sendTitle(
+                                Config.parse(Config.END_DRAW_TITLE),
+                                Config.parse(Config.END_DRAW_SUBTITLE),
+                                20, 60, 20
+                        );
                     }
-                } else {
-                    for (String line : Config.END_MESSAGE_TIME) {
-                        bc(Config.parse(line));
-                    }
-                }
+                });
             case RESETTING:
-                this.resetFull();
+                this.destroy();
                 break;
         }
     }
@@ -225,6 +241,15 @@ public class Arena extends TickedObject implements Listener {
 
     public boolean isWaiting() {
         return phase.equals(Phase.WAITING);
+    }
+
+    /**
+     * Teleport given player to the center of this arena.
+     *
+     * @param player the player.
+     */
+    public void center(Player player) {
+        DeathSwap.instance.teleport(player, getCenter());
     }
 
     /**
@@ -267,6 +292,17 @@ public class Arena extends TickedObject implements Listener {
      */
 
     @EventHandler
+    public void onMove(PlayerMoveEvent e) {
+        Player player = e.getPlayer();
+        if (!players.contains(player)) return;
+        Location to = e.getTo();
+        if (to != null && !area.isInside(to.getBlockX(), to.getBlockZ())) {
+            e.setCancelled(true);
+            e.setTo(e.getFrom());
+        }
+    }
+
+    @EventHandler
     public void onDeath(PlayerDeathEvent e) {
         Player player = e.getEntity();
         if (!players.contains(player)) return;
@@ -303,6 +339,18 @@ public class Arena extends TickedObject implements Listener {
      */
     public void bc(String message) {
         players.forEach(player -> Common.tell(player, message));
+    }
+
+    /**
+     * Broadcast a message only to players in this arena.
+     *
+     * @param message the message.
+     */
+    public void announce(String message) {
+        players.forEach(p -> {
+            Common.tell(p, message);
+            p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 1f);
+        });
     }
 
     private boolean shouldAnnounce(long t) {

@@ -22,6 +22,10 @@ public class Common {
 		return f + (int) (Math.random() * ((t - f) + 1));
 	}
 
+	public static String formatSeconds(int seconds) {
+		return String.format("%2d:%2d", seconds / 60, seconds % 60);
+	}
+
 	/*
 	 * 	Colorize
 	 */

@@ -91,6 +91,10 @@ public class ArenaLibrary {
         return ready.get();
     }
 
+    public void removeArena(Arena arena) {
+        arenas.remove(arena);
+    }
+
     /**
      * Join given player to an ideal arena.
      *
