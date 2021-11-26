@@ -3,6 +3,7 @@ package eu.diaworlds.deathswap.utils;
 import eu.diaworlds.deathswap.DeathSwap;
 import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
 @UtilityClass
@@ -24,11 +25,13 @@ public class Players {
         }
     }
 
-    public static void heal(Player player) {
+    public static void clear(Player player) {
         player.getActivePotionEffects().clear();
+        player.getInventory().clear();
         player.setFireTicks(0);
         player.setHealth(20d);
         player.setFoodLevel(20);
+        player.setGameMode(GameMode.SURVIVAL);
     }
 
 }

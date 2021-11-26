@@ -5,38 +5,83 @@ import eu.diaworlds.deathswap.DeathSwap;
 import eu.diaworlds.deathswap.arena.Arena;
 import eu.diaworlds.deathswap.utils.Players;
 import lombok.Getter;
-import lombok.Setter;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.UUID;
+
 @Getter
-@Setter
 public class DeadPlayer {
 
-    private final Player parent;
+    private final UUID uuid;
     private Arena arena;
 
     public DeadPlayer(Player parent) {
-        this.parent = parent;
+        this.uuid = parent.getUniqueId();
     }
 
+    public Player getPlayer() {
+        return Bukkit.getPlayer(uuid);
+    }
+
+    /**
+     * Handle player join.<br>
+     *
+     * (1) Send join info.<br>
+     * (2) Teleport to spawn.<br>
+     * (3) Hide other players.<br>
+     * (4) Attempt to join arena.<br>
+     */
     public void onJoin() {
-        if (arena != null) return;
+        Player player = getPlayer();
+        if (arena != null || player == null) return;
         for (String line : Config.JOIN_INFO) {
-            parent.sendMessage(Config.parse(line));
+            player.sendMessage(Config.parse(line));
         }
-        parent.teleport(DeathSwap.instance.getSpawn());
-        Players.hide(parent);
-        boolean joined = DeathSwap.instance.getArenaLibrary().joinIdealArena(parent);
-        if (!joined) {
-            DeathSwap.instance.kick(parent, Config.parse(Config.NO_ARENA_KICK));
+        player.teleport(DeathSwap.instance.getSpawn());
+        Players.hide(player);
+        attemptArenaJoin();
+    }
+
+    /**
+     * Handle player quit.<br>
+     *
+     * (1) Quit the current arena. (If any)<br>
+     * (2) Show other players. (Just to reset)<br>
+     */
+    public void onQuit() {
+        Player player = getPlayer();
+        if (arena != null) {
+            arena.quit(player);
+        }
+        Players.show(player);
+    }
+
+    /**
+     * Attempt to join a new arena.
+     */
+    public void attemptArenaJoin() {
+        Player player = getPlayer();
+        if (arena != null || player == null) return;
+        if (!DeathSwap.instance.getArenaLibrary().joinIdealArena(player)) {
+            DeathSwap.instance.kick(player, Config.parse(Config.ARENA_NO_ARENA_KICK));
         }
     }
 
-    public void onQuit() {
-        if (arena != null) {
-            arena.quit(parent);
+    /**
+     * Set current arena. If the new arena is null, player is joined to a new arena.
+     *
+     * @param arena the arena.
+     */
+    public void setArena(Arena arena) {
+        this.arena = arena;
+
+        // Join a new arena
+        Player player = getPlayer();
+        if (this.arena == null && player != null) {
+//            attemptArenaJoin();
+            DeathSwap.instance.kick(player, Config.parse(Config.ARENA_STOP_KICK));
         }
-        Players.show(parent);
     }
 
 }

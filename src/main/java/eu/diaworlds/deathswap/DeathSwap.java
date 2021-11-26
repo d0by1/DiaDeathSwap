@@ -66,12 +66,12 @@ public final class DeathSwap extends JavaPlugin {
     @Override
     public void onDisable() {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            kick(player, Config.parse(Config.SERVER_RESTART_KICK));
+            kick(player, Config.parse(Config.ARENA_STOP_KICK));
         }
         BungeeUtils.destroy();
         this.arenaLibrary.destroy();
         this.playerLibrary.destroy();
-        WorldUtils.deleteWorld("world");
+        deleteWorld();
     }
 
     /**
@@ -167,18 +167,44 @@ public final class DeathSwap extends JavaPlugin {
      * Setup "world" for playing. (Just some general game rules and difficulty.)
      */
     private void setupWorld() {
+        // Settings for world "world"
         World world = Bukkit.getWorld("world");
-        if (world == null) return;
-        WorldUtils.setupBorder(world, Config.ARENA_SIZE_BLOCKS);
-        world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
-        world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
-        Difficulty difficulty;
-        try {
-            difficulty = Difficulty.valueOf(Config.DIFFICULTY);
-        } catch (Throwable t) {
-            difficulty = Difficulty.HARD;
+        if (world != null) {
+            world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
+            world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
+            Difficulty difficulty;
+            try {
+                difficulty = Difficulty.valueOf(Config.DIFFICULTY);
+            } catch (Throwable t) {
+                difficulty = Difficulty.HARD;
+            }
+            world.setDifficulty(difficulty);
         }
-        world.setDifficulty(difficulty);
+
+        // Settings for world "spawn"
+        World spawn = getSpawn().getWorld();
+        if (spawn != null) {
+            spawn.setStorm(false);
+            spawn.setThundering(false);
+            spawn.setClearWeatherDuration(Integer.MAX_VALUE);
+            spawn.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
+            spawn.setGameRule(GameRule.DO_FIRE_TICK, false);
+            spawn.setGameRule(GameRule.DO_MOB_SPAWNING, false);
+            spawn.setGameRule(GameRule.DO_PATROL_SPAWNING, false);
+            spawn.setGameRule(GameRule.DO_TRADER_SPAWNING, false);
+            spawn.setGameRule(GameRule.KEEP_INVENTORY, true);
+            spawn.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
+            spawn.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+            spawn.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
+            spawn.setDifficulty(Difficulty.PEACEFUL);
+        }
+    }
+
+    private void deleteWorld() {
+        File worldFolder = new File(Bukkit.getWorldContainer(), "world");
+        if (worldFolder.exists() && worldFolder.isDirectory()) {
+            worldFolder.delete();
+        }
     }
 
 }

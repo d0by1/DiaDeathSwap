@@ -1,6 +1,5 @@
 package eu.diaworlds.deathswap.player;
 
-import eu.diaworlds.deathswap.Config;
 import eu.diaworlds.deathswap.DeathSwap;
 import eu.diaworlds.deathswap.arena.Arena;
 import org.bukkit.entity.Player;
@@ -13,7 +12,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
-import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 import java.util.Optional;
@@ -22,19 +20,19 @@ public class PlayerListener implements Listener {
 
     private boolean isNotInGame(Player player) {
         Optional<Arena> arena = DeathSwap.instance.getArenaLibrary().getArena(player);
+        if (!arena.isPresent()) return true;
         return !arena.map(Arena::isInGame).orElse(false);
     }
 
     @EventHandler
-    public void onKick(PlayerKickEvent e) {
-        e.setCancelled(true);
-        DeathSwap.instance.kick(e.getPlayer(), Config.parse(Config.SERVER_RESTART_KICK));
-    }
-
-    @EventHandler
     public void onDamage(EntityDamageEvent e) {
-        if (e.getEntity() instanceof Player && isNotInGame((Player) e.getEntity())) {
+        if (!(e.getEntity() instanceof Player)) return;
+        Player player = (Player) e.getEntity();
+        if (isNotInGame(player)) {
             e.setCancelled(true);
+            if (e.getCause().equals(EntityDamageEvent.DamageCause.VOID)) {
+                DeathSwap.instance.spawn(player);
+            }
         }
     }
 

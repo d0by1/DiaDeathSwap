@@ -1,5 +1,8 @@
 package eu.diaworlds.deathswap.arena;
 
+import lombok.Getter;
+
+@Getter
 public class Area {
 
     private final int centerX;
@@ -10,18 +13,6 @@ public class Area {
         this.centerX = centerX;
         this.centerY = centerY;
         this.size = size;
-    }
-
-    public int getCenterX() {
-        return centerX;
-    }
-
-    public int getCenterY() {
-        return centerY;
-    }
-
-    public int getSize() {
-        return size;
     }
 
     /**

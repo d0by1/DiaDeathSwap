@@ -8,6 +8,7 @@ import eu.diaworlds.deathswap.grid.Grid;
 import eu.diaworlds.deathswap.grid.GridPart;
 import eu.diaworlds.deathswap.grid.SpiralGrid;
 import eu.diaworlds.deathswap.utils.Common;
+import eu.diaworlds.deathswap.utils.S;
 import eu.diaworlds.deathswap.utils.collection.DList;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -51,7 +52,7 @@ public class ArenaLibrary {
         World world = Bukkit.getWorld("world");
         if (world == null) return;
 
-        Common.log("Initializing arenas... (%d)", amount);
+        Common.log("Initializing %d arenas...", amount);
         for (int i = 0; i < amount; i++) {
             // Get arenas location from the spiral grid.
             Optional<GridPart> gridPartOptional = grid.getPart(arenaCounter.getAndIncrement());
@@ -67,7 +68,7 @@ public class ArenaLibrary {
                 arenas.add(arena);
             }
         }
-        Common.log("Arenas initialized! (%d)", arenas.size());
+        Common.log("Arenas initialized! Total: %d", arenas.size());
         ready.set(true);
     }
 
@@ -99,11 +100,12 @@ public class ArenaLibrary {
      * @param arena the arena to remove.
      */
     public void removeArena(Arena arena) {
+        arena.destroy();
         arenas.remove(arena);
 
         // Initialize new arena
         if (arenas.size() < Config.ARENA_COUNT) {
-            initArenas(1);
+            S.r(() -> initArenas(1));
         }
     }
 

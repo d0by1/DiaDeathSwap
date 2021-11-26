@@ -10,10 +10,9 @@ import java.io.File;
 import java.util.List;
 import java.util.logging.Level;
 
+@SuppressWarnings("SpellCheckingInspection")
 public class Config {
 
-    public static final int ARENA_SIZE = 128;
-    public static final int ARENA_SIZE_BLOCKS = ARENA_SIZE * 16;
     public static YamlConfiguration CONFIG;
 
     /*
@@ -24,16 +23,16 @@ public class Config {
     public static String DIFFICULTY = "HARD";
 
     @ConfigValue("spawn")
-    public static String SPAWN = "world:0:100:0:0:180";
+    public static String SPAWN = "spawn:7.500:70.000:3.500:90.000:0.000";
 
     @ConfigValue("lobby_server")
     public static String LOBBY_SERVER = "lobby2";
 
     @ConfigValue("chat_format")
-    public static String CHAT_FORMAT = "{prefix}{name}{suffix} &7» &f{message}";
+    public static String CHAT_FORMAT = "{prefix}{name}{username-color}{suffix} &7» {message-color}{message}";
 
     @ConfigValue("arena_count")
-    public static int ARENA_COUNT = 36;
+    public static int ARENA_COUNT = 32;
 
     @ConfigValue("swap_time")
     public static int SWAP_TIME = 120;
@@ -46,102 +45,109 @@ public class Config {
      */
 
     @ConfigValue("scoreboard.title")
-    public static String SCOREBOARD_TITLE = "&f☠ &c&lDEATHSWAP &f☠";
+    public static String SCOREBOARD_TITLE = "&f☠ &3&lDEATHSWAP &f☠";
 
     @ConfigValue("scoreboard.text")
     public static List<String> SCOREBOARD_TEXT = new DList<>("",
-            "",
+            "&3Arena:",
+            "  &7Hráči: &b{arena_players}/2",
+            "  &7Fáze: &b{arena_phase}",
+            "  &7Čas hry: &b{game_time}",
+            "  &7Výměna za &b{swap_time}",
             ""
     );
 
     /*
-     *  Title
+     *  Titles
      */
 
     @ConfigValue("titles.end.winner.title")
-    public static String END_WINNER_TITLE = "&b&lVyhrál Jsi!";
+    public static String GAME_END_WINNER_TITLE = "&b&lVyhrál Jsi!";
 
     @ConfigValue("titles.end.winner.subtitle")
-    public static String END_WINNER_SUBTITLE = "&fGratulujeme.";
+    public static String GAME_END_WINNER_SUBTITLE = "&fGratulujeme.";
 
-    @ConfigValue("title.end.loser.title")
-    public static String END_LOSER_TITLE = "&c&lHra skončila";
+    @ConfigValue("titles.end.loser.title")
+    public static String GAME_END_LOSER_TITLE = "&c&lHra skončila";
 
-    @ConfigValue("title.end.loser.subtitle")
-    public static String END_LOSER_SUBTITLE = "&fVyhrál &b{winner}";
+    @ConfigValue("titles.end.loser.subtitle")
+    public static String GAME_END_LOSER_SUBTITLE = "&fVyhrál &b{winner}";
 
-    @ConfigValue("title.end.draw.title")
-    public static String END_DRAW_TITLE = "&c&lHra skončila";
+    @ConfigValue("titles.end.draw.title")
+    public static String GAME_END_DRAW_TITLE = "&c&lHra skončila";
 
-    @ConfigValue("title.end.draw.subtitle")
-    public static String END_DRAW_SUBTITLE = "&fNikdo nevyhrál.";
+    @ConfigValue("titles.end.draw.subtitle")
+    public static String GAME_END_DRAW_SUBTITLE = "&fNikdo nevyhrál.";
 
     /*
      *  Messages
      */
 
     @ConfigValue("messages.prefix")
-    public static String PREFIX = "&8(( &cDeathSwap &8)) &7";
+    public static String PREFIX = "&8[&bDeathSwap&8] &7";
 
     @ConfigValue("messages.no_perm")
     public static String NO_PERM = "{prefix}&cNa toto nemáš oprávnění.";
 
     @ConfigValue("messages.join_info")
     public static List<String> JOIN_INFO = new DList<>("",
-            "&f☠ &c&lDEATHSWAP &f☠ &7(1.0)\n",
+            "&f☠ &c&lDEATHSWAP &f☠ &7(v1.0)\n",
             "",
-            "&7&oKaždé 2 minuty si s protihráčem vyměníte lokace.",
-            "&7&oTvým cílem je protihráče při výměně zabít tak, že",
-            "&7&onapřiklad skočíš těsně před teleportem do pasti.",
+            " &f- Každé 2 minuty si s protihráčem vyměníte pozice.",
+            " &fTvým cílem je protihráče při výměně zabít tak, že",
+            " &fnapříklad skočíš těsně před teleportem do pasti.",
             "",
-            "&7&oDej si však pozor, protihráč se bude snažit o to samé.",
+            " &f- Dej si však pozor, protihráč se bude snažit o to samé.",
             "",
-            "&7&oNormální PVP je vypnuto.",
+            " &f- Normální PVP je vypnuto.",
             "",
-            "&7&oNašel jsi nějaký bug? &fhttps://discord.diaworlds.eu/ \n"
+            " &bNašel jsi nějaký bug? &7&nhttps://discord.diaworlds.eu/ \n"
     );
 
-    @ConfigValue("messages.end.winner")
-    public static List<String> END_MESSAGE_WINNER = new DList<>("",
-            "",
+    @ConfigValue("messages.game.end.winner")
+    public static List<String> GAME_END_MESSAGE_WINNER = new DList<>("",
+            "Winner: {winner}",
             ""
     );
 
-    @ConfigValue("messages.end.time")
-    public static List<String> END_MESSAGE_TIME = new DList<>("",
-            "",
+    @ConfigValue("messages.game.end.time")
+    public static List<String> GAME_END_MESSAGE_TIME = new DList<>("",
+            "Draw",
             ""
     );
 
-    @ConfigValue("messages.start_delayed")
-    public static String START_DELAYED = "{prefix}Začátek hry byl přerušen.";
+    @ConfigValue("messages.game.start_delayed")
+    public static String GAME_START_DELAYED = "{prefix}&bZačátek hry byl přerušen.";
 
-    @ConfigValue("messages.start_announce")
-    public static String START_ANNOUNCE = "{prefix}Hra začíná za &b%1$d sekund!";
+    @ConfigValue("messages.game.start_announce")
+    public static String GAME_START_ANNOUNCE = "{prefix}Hra začíná za &b%1$d sekund!";
 
-    @ConfigValue("messages.swap_announce")
-    public static String SWAP_ANNOUNCE = "{prefix}Výměna za &b%1$d sekund!";
+    @ConfigValue("messages.game.started")
+    public static String GAME_STARTED = "{prefix}&bHra začala! Přelsti svého nepřítele.";
 
-    @ConfigValue("messages.end_announce")
-    public static String END_ANNOUNCE = "{prefix}Konec hry za &b%1$d sekund!";
+    @ConfigValue("messages.game.swap_announce")
+    public static String GAME_SWAP_ANNOUNCE = "{prefix}Výměna za &b%1$d sekund!";
 
-    @ConfigValue("messages.stop_announce")
-    public static String STOP_ANNOUNCE = "{prefix}Server se ukončí za &b%1$d sekund!";
+    @ConfigValue("messages.game.end_announce")
+    public static String GAME_END_ANNOUNCE = "{prefix}Konec hry za &b%1$d sekund!";
 
-    @ConfigValue("messages.player_join")
-    public static String PLAYER_JOIN = "{prefix}&c%1$s &7se připojil. &c[%2$d/2]";
+    @ConfigValue("messages.game.player_death")
+    public static String GAME_PLAYER_DEATH = "{prefix}&b%1$s &7died.";
 
-    @ConfigValue("messages.player_quit")
-    public static String PLAYER_QUIT = "{prefix}&c%1$s &7se odpojil. &c[%2$d/2]";
+    @ConfigValue("messages.arena.stop_announce")
+    public static String ARENA_STOP_ANNOUNCE = "{prefix}Aréna se vypne za &b%1$d sekund!";
 
-    @ConfigValue("messages.game_ended_kick")
-    public static String GAME_ENDED_KICK = "{prefix}Hra skončila.";
+    @ConfigValue("messages.arena.player_join")
+    public static String ARENA_PLAYER_JOIN = "{prefix}&b%1$s &7se připojil. &b[%2$d/2]";
 
-    @ConfigValue("messages.no_arena_kick")
-    public static String NO_ARENA_KICK = "{prefix}&cNebyla nalezena žádná volná hra...";
+    @ConfigValue("messages.arena.player_quit")
+    public static String ARENA_PLAYER_QUIT = "{prefix}&b%1$s &7se odpojil. &b[%2$d/2]";
 
-    @ConfigValue("messages.server_restart_kick")
-    public static String SERVER_RESTART_KICK = "{prefix}&cServer se restartuje...";
+    @ConfigValue("messages.arena.no_arena_kick")
+    public static String ARENA_NO_ARENA_KICK = "{prefix}&bNebyla nalezena žádná volná hra...";
+
+    @ConfigValue("messages.arena.arena_stop_kick")
+    public static String ARENA_STOP_KICK = "{prefix}&bAréna se restartuje...";
 
     /*
      *  General Methods
