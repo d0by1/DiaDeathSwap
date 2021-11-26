@@ -24,15 +24,15 @@ public class Arena extends TickedObject implements Listener {
 
     private final String id;
     private final DList<Player> players;
-    private final ArenaWorld arenaWorld;
+    private final Area area;
     private Location center;
     private Phase phase;
     private Player winner;
     private volatile boolean shouldTick = false;
 
-    public Arena(String id, ArenaWorld arenaWorld, Location center) {
+    public Arena(String id, Area area, Location center) {
         this.id = id;
-        this.arenaWorld = arenaWorld;
+        this.area = area;
         this.center = center;
         this.winner = null;
         this.phase = Phase.WAITING;
@@ -122,7 +122,7 @@ public class Arena extends TickedObject implements Listener {
      */
     public void resetFull() {
         reset();
-        arenaWorld.regenChunks();
+        area.regenChunks();
     }
 
     @Override
