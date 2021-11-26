@@ -164,8 +164,6 @@ public class Arena extends TickedObject implements Listener {
                     bc(String.format(Config.parse(Config.STOP_ANNOUNCE), t));
                 }
                 break;
-            case RESETTING:
-                players.forEach(this::quit);
         }
         players.forEach(Board::update);
     }

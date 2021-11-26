@@ -91,8 +91,20 @@ public class ArenaLibrary {
         return ready.get();
     }
 
+    /**
+     * Remove given arena from the library. Once the arena is removed,
+     * this method will check if there are enough arenas and if not,
+     * it will initialize a new one.
+     *
+     * @param arena the arena to remove.
+     */
     public void removeArena(Arena arena) {
         arenas.remove(arena);
+
+        // Initialize new arena
+        if (arenas.size() < Config.ARENA_COUNT) {
+            initArenas(1);
+        }
     }
 
     /**
