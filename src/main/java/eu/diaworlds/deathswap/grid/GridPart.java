@@ -1,4 +1,15 @@
 package eu.diaworlds.deathswap.grid;
 
-public class GridPart {
+import org.bukkit.Location;
+
+public interface GridPart {
+
+    int getSize();
+
+    int getX();
+
+    int getY();
+
+    Location getCenter();
+
 }

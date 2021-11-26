@@ -12,6 +12,8 @@ public interface Grid {
 
     int parts();
 
-    int size();
+    int getMaxSize();
+
+    int getSpacing();
 
 }
