@@ -5,10 +5,7 @@ import eu.diaworlds.deathswap.commands.DeadCommand;
 import eu.diaworlds.deathswap.commands.api.CommandManager;
 import eu.diaworlds.deathswap.player.PlayerController;
 import eu.diaworlds.deathswap.player.PlayerListener;
-import eu.diaworlds.deathswap.utils.BungeeUtils;
-import eu.diaworlds.deathswap.utils.Common;
-import eu.diaworlds.deathswap.utils.Locations;
-import eu.diaworlds.deathswap.utils.S;
+import eu.diaworlds.deathswap.utils.*;
 import eu.diaworlds.deathswap.utils.config.CFG;
 import eu.diaworlds.deathswap.utils.ticker.Ticker;
 import lombok.Getter;
@@ -45,6 +42,7 @@ public final class DeathSwap extends JavaPlugin {
         Config.CONFIG = CFG.load(Config.class, getConfigFile());
         Common.log("Configuration loaded!");
         BungeeUtils.init();
+        DExecutor.init(Runtime.getRuntime().availableProcessors());
 
         this.ticker = new Ticker();
         this.arenaController = new ArenaController();
