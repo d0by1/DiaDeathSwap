@@ -8,15 +8,16 @@ import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Getter
-public class DeadPlayer {
+public class PlayerProfile {
 
     private final UUID uuid;
     private Arena arena;
 
-    public DeadPlayer(Player parent) {
+    public PlayerProfile(Player parent) {
         this.uuid = parent.getUniqueId();
     }
 
@@ -40,7 +41,7 @@ public class DeadPlayer {
         }
         player.teleport(DeathSwap.instance.getSpawn());
         Players.hide(player);
-        attemptArenaJoin();
+        attemptIdealArenaJoin();
     }
 
     /**
@@ -52,20 +53,34 @@ public class DeadPlayer {
     public void onQuit() {
         Player player = getPlayer();
         if (arena != null) {
-            arena.quit(player);
+            arena.onQuit(player);
+            arena = null;
         }
         Players.show(player);
     }
 
     /**
-     * Attempt to join a new arena.
+     * Attempt to join ideal arena.
      */
-    public void attemptArenaJoin() {
+    public void attemptIdealArenaJoin() {
+        Optional<Arena> optionalArena = DeathSwap.instance.getArenaController().getIdealArena();
+        optionalArena.ifPresent(this::attemptArenaJoin);
+    }
+
+    /**
+     * Attempt to join an arena.
+     */
+    public void attemptArenaJoin(Arena arena) {
         Player player = getPlayer();
-        if (arena != null || player == null) return;
-        if (!DeathSwap.instance.getArenaLibrary().joinIdealArena(player)) {
-            DeathSwap.instance.kick(player, Config.parse(Config.ARENA_NO_ARENA_KICK));
+        if (this.arena != null || player == null) {
+            return;
         }
+
+        if (!arena.onJoin(player)) {
+            DeathSwap.instance.kick(player, Config.parse(Config.ARENA_NO_ARENA_KICK));
+            return;
+        }
+        this.setArena(arena);
     }
 
     /**
@@ -79,7 +94,7 @@ public class DeadPlayer {
         // Join a new arena
         Player player = getPlayer();
         if (this.arena == null && player != null) {
-//            attemptArenaJoin();
+            attemptIdealArenaJoin();
             DeathSwap.instance.kick(player, Config.parse(Config.ARENA_STOP_KICK));
         }
     }

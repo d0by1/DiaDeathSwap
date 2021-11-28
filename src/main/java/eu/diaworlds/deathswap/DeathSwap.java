@@ -1,13 +1,16 @@
 package eu.diaworlds.deathswap;
 
+import eu.diaworlds.deathswap.arena.ArenaController;
 import eu.diaworlds.deathswap.commands.DeadCommand;
 import eu.diaworlds.deathswap.commands.api.CommandManager;
-import eu.diaworlds.deathswap.library.ArenaLibrary;
-import eu.diaworlds.deathswap.library.PlayerLibrary;
+import eu.diaworlds.deathswap.player.PlayerController;
 import eu.diaworlds.deathswap.player.PlayerListener;
-import eu.diaworlds.deathswap.tick.Ticker;
-import eu.diaworlds.deathswap.utils.*;
+import eu.diaworlds.deathswap.utils.BungeeUtils;
+import eu.diaworlds.deathswap.utils.Common;
+import eu.diaworlds.deathswap.utils.Locations;
+import eu.diaworlds.deathswap.utils.S;
 import eu.diaworlds.deathswap.utils.config.CFG;
+import eu.diaworlds.deathswap.utils.ticker.Ticker;
 import lombok.Getter;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -19,15 +22,12 @@ import java.io.File;
 @Getter
 public final class DeathSwap extends JavaPlugin {
 
-    /**
-     * Running instance of the DeathSwap plugin.
-     */
+    // Running instance of the DeathSwap plugin.
     public static DeathSwap instance;
-    private CommandManager commandManager;
-    private ArenaLibrary arenaLibrary;
-    private PlayerLibrary playerLibrary;
     private Ticker ticker;
-
+    private ArenaController arenaController;
+    private PlayerController playerController;
+    private CommandManager commandManager;
     // Spawn location of the server (Like a waiting lobby or something)
     private Location spawn;
     // The "config.yml" file.
@@ -46,10 +46,10 @@ public final class DeathSwap extends JavaPlugin {
         Common.log("Configuration loaded!");
         BungeeUtils.init();
 
-        this.commandManager = new CommandManager();
-        this.arenaLibrary = new ArenaLibrary();
-        this.playerLibrary = new PlayerLibrary();
         this.ticker = new Ticker();
+        this.arenaController = new ArenaController();
+        this.playerController = new PlayerController();
+        this.commandManager = new CommandManager();
 
         registerListener(new PlayerListener());
 
@@ -69,8 +69,8 @@ public final class DeathSwap extends JavaPlugin {
             kick(player, Config.parse(Config.ARENA_STOP_KICK));
         }
         BungeeUtils.destroy();
-        this.arenaLibrary.destroy();
-        this.playerLibrary.destroy();
+        this.arenaController.destroy();
+        this.playerController.destroy();
         deleteWorld();
     }
 
@@ -87,7 +87,7 @@ public final class DeathSwap extends JavaPlugin {
      * @return ready state.
      */
     public boolean isReady() {
-        return arenaLibrary.isReady();
+        return arenaController.isReady();
     }
 
     /**
@@ -157,7 +157,7 @@ public final class DeathSwap extends JavaPlugin {
      */
     public void teleport(Player player, Location location) {
         if (!Bukkit.isPrimaryThread()) {
-            S.r(() -> player.teleport(location));
+            S.sync(() -> player.teleport(location));
             return;
         }
         player.teleport(location);
@@ -181,9 +181,10 @@ public final class DeathSwap extends JavaPlugin {
             world.setDifficulty(difficulty);
         }
 
-        // Settings for world "spawn"
+        // Settings for spawn world
         World spawn = getSpawn().getWorld();
         if (spawn != null) {
+            if (spawn.getName().equals("world")) return;
             spawn.setStorm(false);
             spawn.setThundering(false);
             spawn.setClearWeatherDuration(Integer.MAX_VALUE);

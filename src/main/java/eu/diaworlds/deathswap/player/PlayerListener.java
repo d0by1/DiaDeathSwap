@@ -2,6 +2,7 @@ package eu.diaworlds.deathswap.player;
 
 import eu.diaworlds.deathswap.DeathSwap;
 import eu.diaworlds.deathswap.arena.Arena;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,9 +20,9 @@ import java.util.Optional;
 public class PlayerListener implements Listener {
 
     private boolean isNotInGame(Player player) {
-        Optional<Arena> arena = DeathSwap.instance.getArenaLibrary().getArena(player);
+        Optional<Arena> arena = DeathSwap.instance.getArenaController().getArena(player.getUniqueId());
         if (!arena.isPresent()) return true;
-        return !arena.map(Arena::isInGame).orElse(false);
+        return !arena.map(arena1 -> arena1.getState().isInGame()).orElse(false);
     }
 
     @EventHandler
@@ -73,7 +74,13 @@ public class PlayerListener implements Listener {
         if (e.getCause().equals(PlayerTeleportEvent.TeleportCause.PLUGIN) || e.getCause().equals(PlayerTeleportEvent.TeleportCause.COMMAND)) {
             return;
         }
-        String toWorld = e.getTo().getWorld().getName();
+
+        Location to = e.getTo();
+        if (to == null || to.getWorld() == null || e.getFrom().getWorld() == null) {
+            return;
+        }
+
+        String toWorld = to.getWorld().getName();
         String fromWorld = e.getFrom().getWorld().getName();
         if (!toWorld.equals(fromWorld)) {
             e.setCancelled(true);

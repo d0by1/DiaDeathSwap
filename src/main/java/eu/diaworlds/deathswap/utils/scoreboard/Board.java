@@ -3,7 +3,7 @@ package eu.diaworlds.deathswap.utils.scoreboard;
 import eu.diaworlds.deathswap.Config;
 import eu.diaworlds.deathswap.DeathSwap;
 import eu.diaworlds.deathswap.arena.Arena;
-import eu.diaworlds.deathswap.player.DeadPlayer;
+import eu.diaworlds.deathswap.player.PlayerProfile;
 import eu.diaworlds.deathswap.utils.Common;
 import eu.diaworlds.deathswap.utils.S;
 import eu.diaworlds.deathswap.utils.collection.DList;
@@ -17,7 +17,7 @@ public class Board {
     public static void create(Player player) {
         // Needs to be on the main thread
         if (!Bukkit.isPrimaryThread()) {
-            S.r(() -> create(player));
+            S.sync(() -> create(player));
             return;
         }
 
@@ -47,14 +47,14 @@ public class Board {
     }
 
     private static String parse(Player player, String string) {
-        DeadPlayer deadPlayer = DeathSwap.instance.getPlayerLibrary().get(player);
-        if (deadPlayer == null) return string;
-        Arena arena = deadPlayer.getArena();
+        PlayerProfile playerProfile = DeathSwap.instance.getPlayerController().get(player.getUniqueId());
+        if (playerProfile == null) return string;
+        Arena arena = playerProfile.getArena();
         if (arena == null) return string;
         return string
-                .replace("{game_time}", Common.formatSeconds(arena.getGameTime()))
+                .replace("{game_time}", Common.formatSeconds(arena.getTime()))
                 .replace("{swap_time}", Common.formatSeconds(arena.getSwapTime()))
-                .replace("{arena_phase}", arena.getPhase().getDisplayName())
+                .replace("{arena_phase}", arena.getState().getPhase().getDisplayName())
                 .replace("{arena_players}", String.valueOf(arena.getPlayers().size()))
                 ;
     }

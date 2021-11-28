@@ -9,6 +9,12 @@ import org.bukkit.entity.Player;
 @UtilityClass
 public class Players {
 
+    /**
+     * Hide this player to all other players
+     * and hide all other players to this player.
+     *
+     * @param player The player.
+     */
     public static void hide(Player player) {
         if (Bukkit.getOnlinePlayers().size() < 2) return;
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
@@ -17,6 +23,12 @@ public class Players {
         }
     }
 
+    /**
+     * Show this player to all other players
+     * and show all other players to this player.
+     *
+     * @param player The player.
+     */
     public static void show(Player player) {
         if (Bukkit.getOnlinePlayers().size() < 2) return;
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
@@ -25,6 +37,13 @@ public class Players {
         }
     }
 
+    /**
+     * Simple method for resetting some player stats.
+     * Resets players potion effects, inventory, fire ticks,
+     * health, food level and game mode (to survival).
+     *
+     * @param player The player.
+     */
     public static void clear(Player player) {
         player.getActivePotionEffects().clear();
         player.getInventory().clear();

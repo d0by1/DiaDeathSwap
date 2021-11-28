@@ -8,6 +8,10 @@ import org.bukkit.World;
 public class Locations {
 
     public static String asString(@NonNull Location l, boolean includeYawPitch) {
+        if (l.getWorld() == null) {
+            return null;
+        }
+
         String location = String.format("%s:%.3f:%.3f:%.3f", l.getWorld().getName(), l.getX(), l.getY(), l.getZ());
         if (includeYawPitch) {
             location += String.format(":%.3f:%.3f", l.getYaw(), l.getPitch());
