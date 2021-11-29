@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ArenaController {
 
     private static final int ARENA_SIZE = 2000;
+    private static final int ARENA_HALF_SIZE = 1000;
     private static final int ARENA_SPACE = 1000;
 
     private final Map<String, Arena> arenas;
@@ -125,10 +126,15 @@ public class ArenaController {
             if (gridPartOptional.isPresent()) {
                 GridPart gridPart = gridPartOptional.get();
                 // Calculate the actual world location.
-                int half = ARENA_SIZE / 2;
                 int x = gridPart.getX() * (ARENA_SIZE + ARENA_SPACE);
                 int z = gridPart.getY() * (ARENA_SIZE + ARENA_SPACE);
-                ArenaRegion region = new ArenaRegion(world.getName(), x - half, z - half, x + half, z + half);
+                ArenaRegion region = new ArenaRegion(
+                        world.getName(),
+                        x - ARENA_HALF_SIZE,
+                        z - ARENA_HALF_SIZE,
+                        x + ARENA_HALF_SIZE,
+                        z + ARENA_HALF_SIZE
+                );
                 // Add the arena
                 Arena arena = new Arena(UUID.randomUUID().toString(), region);
                 registerArena(arena);

@@ -1,11 +1,14 @@
 package eu.diaworlds.deathswap.arena;
 
 import lombok.Getter;
+import lombok.ToString;
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 
 @Getter
+@ToString
 public class ArenaRegion {
 
     private final String worldName;
@@ -14,12 +17,15 @@ public class ArenaRegion {
     private final int maxX;
     private final int maxY;
 
+    private Location center;
+
     public ArenaRegion(String worldName, int minX, int minY, int maxX, int maxY) {
         this.worldName = worldName;
         this.minX = minX;
         this.minY = minY;
         this.maxX = maxX;
         this.maxY = maxY;
+        this.center = null;
     }
 
     /**
@@ -30,17 +36,21 @@ public class ArenaRegion {
      * @return true if the position is inside, otherwise false.
      */
     public boolean isInside(int x, int y) {
-        return getMaxX() > x && getMinX() < x && getMaxY() > y && getMinY() < y;
+        return getMaxX() >= x && getMinX() <= x && getMaxY() >= y && getMinY() <= y;
     }
 
     public Location getCenter() {
-        World world = getWorld();
-        if (world == null) {
-            return null;
+        if (center == null) {
+            World world = getWorld();
+            if (world == null) {
+                return null;
+            }
+            int x = getCenterX();
+            int z = getCenterY();
+            int y = world.getHighestBlockYAt(x, z);
+            center = new Location(world, x, y, z);
         }
-        int x = getCenterX();
-        int z = getCenterY();
-        return new Location(world, x, world.getHighestBlockYAt(x, z), z);
+        return center;
     }
 
     public World getWorld() {

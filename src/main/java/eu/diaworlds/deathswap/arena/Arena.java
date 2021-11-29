@@ -67,7 +67,9 @@ public class Arena implements PlayerList {
      * @param player the player.
      */
     public void center(Player player) {
-        DeathSwap.instance.teleport(player, region.getCenter());
+        Location center = region.getCenter();
+        DeathSwap.instance.teleport(player, center);
+        DeathSwap.instance.teleport(player, center);
     }
 
     /**
@@ -77,9 +79,9 @@ public class Arena implements PlayerList {
      * @return the other player.
      */
     public Player getOtherPlayer(Player player) {
-        if (players.size() < 2 || !players.contains(player.getUniqueId())) return null;
+        if (players.size() < 1) return null;
         for (Player player1 : getPlayers()) {
-            if (player.equals(player1)) continue;
+            if (player.getUniqueId().equals(player1.getUniqueId())) continue;
             return player1;
         }
         return null;
@@ -142,57 +144,61 @@ public class Arena implements PlayerList {
      */
     @Override
     public boolean onJoin(Player player) {
-        if (player == null || !isAllowed(player.getUniqueId()) || isJoined(player.getUniqueId())) {
-            return false;
+        synchronized (players) {
+            if (player == null || !isAllowed(player.getUniqueId()) || isJoined(player.getUniqueId())) {
+                return false;
+            }
+            // Add them to the list
+            players.add(player.getUniqueId());
+            // Heal them
+            Players.clear(player);
+            // Make them see each other
+            if (players.size() > 1) {
+                this.updatePlayerVisibility();
+            }
+            // Update scoreboard
+            Board.create(player);
+            this.getPlayers().forEach(Board::update);
+            // Send messages
+            this.bc(String.format(Config.parse(Config.ARENA_PLAYER_JOIN), player.getName(), players.size()));
+            // Handle join
+            if (players.size() == 2) {
+                state.setPhase(ArenaPhase.STARTING);
+            }
+            return true;
         }
-        // Add them to the list
-        players.add(player.getUniqueId());
-        // Heal them
-        Players.clear(player);
-        // Make them see each other
-        if (players.size() > 1) {
-            this.updatePlayerVisibility();
-        }
-        // Update scoreboard
-        Board.create(player);
-        this.getPlayers().forEach(Board::update);
-        // Send messages
-        this.bc(String.format(Config.parse(Config.ARENA_PLAYER_JOIN), player.getName(), players.size()));
-        // Handle join
-        if (players.size() == 2) {
-            state.setPhase(ArenaPhase.STARTING);
-        }
-        return true;
     }
 
     @Override
     public boolean onQuit(Player player) {
-        if (player == null || !isJoined(player.getUniqueId())) {
-            return false;
-        }
-        // Remove them from the list
-        players.remove(player.getUniqueId());
-        // Heal them and Hide them
-        Players.clear(player);
-        Players.hide(player);
-        // Remove scoreboard
-        Board.remove(player);
-        // Update scoreboard for the remaining players
-        this.getPlayers().forEach(Board::update);
-        // Send messages
-        bc(String.format(Config.parse(Config.ARENA_PLAYER_QUIT), player.getName(), players.size()));
-        // Handle quit
-        if (state.isInGame()) {
-            // Make the other player win (If there is one)
-            if (players.size() >= 1) {
-                state.setWinner(getOtherPlayer(player).getUniqueId());
+        synchronized (players) {
+            if (player == null || !isJoined(player.getUniqueId())) {
+                return false;
             }
-            state.setPhase(ArenaPhase.ENDING);
-        } else if (state.getPhase().equals(ArenaPhase.STARTING)) {
-            // Delay start
-            state.setPhase(ArenaPhase.WAITING);
+            // Remove them from the list
+            players.remove(player.getUniqueId());
+            // Heal them and Hide them
+            Players.clear(player);
+            Players.hide(player);
+            // Remove scoreboard
+            Board.remove(player);
+            // Update scoreboard for the remaining players
+            this.getPlayers().forEach(Board::update);
+            // Send messages
+            bc(String.format(Config.parse(Config.ARENA_PLAYER_QUIT), player.getName(), players.size()));
+            // Handle quit
+            if (state.isInGame()) {
+                // Make the other player win (If there is one)
+                if (players.size() >= 1) {
+                    state.setWinner(getOtherPlayer(player).getUniqueId());
+                }
+                state.setPhase(ArenaPhase.ENDING);
+            } else if (state.getPhase().equals(ArenaPhase.STARTING)) {
+                // Delay start
+                state.setPhase(ArenaPhase.WAITING);
+            }
+            return true;
         }
-        return true;
     }
 
     @Override

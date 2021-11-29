@@ -36,11 +36,11 @@ public class PlayerProfile {
     public void onJoin() {
         Player player = getPlayer();
         if (arena != null || player == null) return;
+        Players.hide(player);
         for (String line : Config.JOIN_INFO) {
             player.sendMessage(Config.parse(line));
         }
         player.teleport(DeathSwap.instance.getSpawn());
-        Players.hide(player);
         attemptIdealArenaJoin();
     }
 
@@ -63,6 +63,9 @@ public class PlayerProfile {
      * Attempt to join ideal arena.
      */
     public void attemptIdealArenaJoin() {
+        if (this.arena != null || getPlayer() == null) {
+            return;
+        }
         Optional<Arena> optionalArena = DeathSwap.instance.getArenaController().getIdealArena();
         optionalArena.ifPresent(this::attemptArenaJoin);
     }
@@ -76,11 +79,10 @@ public class PlayerProfile {
             return;
         }
 
-        if (!arena.onJoin(player)) {
-            DeathSwap.instance.kick(player, Config.parse(Config.ARENA_NO_ARENA_KICK));
+        if ((this.arena = arena).onJoin(player)) {
             return;
         }
-        this.setArena(arena);
+        DeathSwap.instance.kick(player, Config.parse(Config.ARENA_NO_ARENA_KICK));
     }
 
     /**
@@ -95,7 +97,6 @@ public class PlayerProfile {
         Player player = getPlayer();
         if (this.arena == null && player != null) {
             attemptIdealArenaJoin();
-            DeathSwap.instance.kick(player, Config.parse(Config.ARENA_STOP_KICK));
         }
     }
 

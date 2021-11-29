@@ -42,7 +42,7 @@ public final class DeathSwap extends JavaPlugin {
         Config.CONFIG = CFG.load(Config.class, getConfigFile());
         Common.log("Configuration loaded!");
         BungeeUtils.init();
-        DExecutor.init(Runtime.getRuntime().availableProcessors());
+        DExecutor.init(2);
 
         this.ticker = new Ticker();
         this.arenaController = new ArenaController();
@@ -155,9 +155,10 @@ public final class DeathSwap extends JavaPlugin {
      */
     public void teleport(Player player, Location location) {
         if (!Bukkit.isPrimaryThread()) {
-            S.sync(() -> player.teleport(location));
+            Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> teleport(player, location));
             return;
         }
+        Common.debug(location);
         player.teleport(location);
     }
 

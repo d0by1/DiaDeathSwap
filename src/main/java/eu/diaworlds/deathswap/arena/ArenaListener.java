@@ -4,6 +4,7 @@ import eu.diaworlds.deathswap.Config;
 import eu.diaworlds.deathswap.DeathSwap;
 import eu.diaworlds.deathswap.utils.Common;
 import eu.diaworlds.deathswap.utils.LP;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,6 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
 
 public class ArenaListener implements Listener {
 
