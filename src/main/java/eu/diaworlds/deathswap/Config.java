@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 @SuppressWarnings("SpellCheckingInspection")
-public class Config {
+public final class Config {
 
     public static YamlConfiguration CONFIG;
 
@@ -44,16 +44,58 @@ public class Config {
      *  Scoreboard
      */
 
-    @ConfigValue("scoreboard.title")
-    public static String SCOREBOARD_TITLE = "&f☠ &3&lDEATHSWAP &f☠";
+    // Waiting
 
-    @ConfigValue("scoreboard.text")
-    public static List<String> SCOREBOARD_TEXT = new DList<>("",
+    @ConfigValue("scoreboard.waiting.title")
+    public static String SCOREBOARD_WAITING_TITLE = "&f☠ &3&lDEATHSWAP &f☠";
+
+    @ConfigValue("scoreboard.waiting.text")
+    public static List<String> SCOREBOARD_WAITING_TEXT = new DList<>("",
             "&3Aréna:",
             "  &7Hráči: &b{arena_players}/2",
             "  &7Fáze: &b{arena_phase}",
-            "  &7Čas hry: &b{game_time}",
-            "  &7Výměna za &b{swap_time}",
+            ""
+    );
+
+    // Starting
+
+    @ConfigValue("scoreboard.starting.title")
+    public static String SCOREBOARD_STARTING_TITLE = "&f☠ &3&lDEATHSWAP &f☠";
+
+    @ConfigValue("scoreboard.starting.text")
+    public static List<String> SCOREBOARD_STARTING_TEXT = new DList<>("",
+            "&3Aréna:",
+            "  &7Hráči: &b{arena_players}/2",
+            "  &7Fáze: &b{arena_phase}",
+            "  &7Začátek za: &b{game_time}",
+            ""
+    );
+
+    // Ingame
+
+    @ConfigValue("scoreboard.ingame.title")
+    public static String SCOREBOARD_INGAME_TITLE = "&f☠ &3&lDEATHSWAP &f☠";
+
+    @ConfigValue("scoreboard.ingame.text")
+    public static List<String> SCOREBOARD_INGAME_TEXT = new DList<>("",
+            "&3Aréna:",
+            "  &7Hráči: &b{arena_players}/2",
+            "  &7Fáze: &b{arena_phase}",
+            "  &7Čas: &b{game_time}",
+            "  &7Výměna za: &b{swap_time}",
+            ""
+    );
+
+    // Ending
+
+    @ConfigValue("scoreboard.ending.title")
+    public static String SCOREBOARD_ENDING_TITLE = "&f☠ &3&lDEATHSWAP &f☠";
+
+    @ConfigValue("scoreboard.ending.text")
+    public static List<String> SCOREBOARD_ENDING_TEXT = new DList<>("",
+            "&3Aréna:",
+            "  &7Hráči: &b{arena_players}/2",
+            "  &7Fáze: &b{arena_phase}",
             ""
     );
 
@@ -134,14 +176,20 @@ public class Config {
     @ConfigValue("messages.game.swap_announce")
     public static String GAME_SWAP_ANNOUNCE = "{prefix}Výměna za &b%1$d sekund!";
 
+    @ConfigValue("messages.game.swapped")
+    public static String GAME_SWAPPED = "{prefix}&bVýměna!";
+
     @ConfigValue("messages.game.end_announce")
     public static String GAME_END_ANNOUNCE = "{prefix}Konec hry za &b%1$d sekund!";
 
     @ConfigValue("messages.game.player_death")
-    public static String GAME_PLAYER_DEATH = "{prefix}&b%1$s &7died.";
+    public static String GAME_PLAYER_DEATH = "{prefix}&b%1$s &7zemřel.";
 
-    @ConfigValue("messages.arena.stop_announce")
-    public static String ARENA_STOP_ANNOUNCE = "{prefix}Aréna se vypne za &b%1$d sekund!";
+    @ConfigValue("messages.arena.auto_join_announce")
+    public static String ARENA_AUTO_JOIN_ANNOUNCE = "{prefix}Pokus o připojení do nové arény za &b%1$d sekund!";
+
+    @ConfigValue("messages.arena.auto_joined")
+    public static String ARENA_AUTO_JOINED = "{prefix}&bByl(a) jsi automaticky připojen(a) do nové arény!";
 
     @ConfigValue("messages.arena.player_join")
     public static String ARENA_PLAYER_JOIN = "{prefix}&b%1$s &7se připojil. &b[%2$d/2]";
@@ -150,10 +198,10 @@ public class Config {
     public static String ARENA_PLAYER_QUIT = "{prefix}&b%1$s &7se odpojil. &b[%2$d/2]";
 
     @ConfigValue("messages.arena.no_arena_kick")
-    public static String ARENA_NO_ARENA_KICK = "{prefix}&bNebyla nalezena žádná volná hra...";
+    public static String ARENA_NO_ARENA_KICK = "{prefix}&bNebyla nalezena žádná volná aréna...";
 
     @ConfigValue("messages.arena.arena_stop_kick")
-    public static String ARENA_STOP_KICK = "{prefix}&bAréna se restartuje...";
+    public static String ARENA_STOP_KICK = "{prefix}&bServer se restartuje...";
 
     /*
      *  General Methods

@@ -182,7 +182,7 @@ public class ArenaState extends Ticked {
                 if (t == 0) {
                     setPhase(ArenaPhase.STOPPING);
                 } else if (shouldAnnounce(t)) {
-                    parent.bc(String.format(Config.parse(Config.ARENA_STOP_ANNOUNCE), t));
+                    parent.bc(String.format(Config.parse(Config.ARENA_AUTO_JOIN_ANNOUNCE), t));
                 }
                 break;
         }

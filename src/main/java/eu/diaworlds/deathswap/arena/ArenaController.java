@@ -5,10 +5,13 @@ import eu.diaworlds.deathswap.DeathSwap;
 import eu.diaworlds.deathswap.grid.Grid;
 import eu.diaworlds.deathswap.grid.GridPart;
 import eu.diaworlds.deathswap.grid.SpiralGrid;
+import eu.diaworlds.deathswap.player.PlayerProfile;
 import eu.diaworlds.deathswap.utils.Common;
 import eu.diaworlds.deathswap.utils.S;
+import eu.diaworlds.deathswap.utils.collection.DList;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 
 import java.util.Map;
 import java.util.Optional;
@@ -27,6 +30,7 @@ public class ArenaController {
     private final AtomicInteger arenaCounter;
     private final AtomicBoolean ready;
     private final Grid grid;
+    private final DList<UUID> joinQueue;
 
     /**
      * Default constructor. Set up and initialize arenas.
@@ -36,6 +40,7 @@ public class ArenaController {
         this.arenaCounter = new AtomicInteger(0);
         this.ready = new AtomicBoolean(false);
         this.grid = new SpiralGrid();
+        this.joinQueue = new DList<>();
 
         S.sync(() -> initArenas(Config.ARENA_COUNT));
     }
@@ -48,6 +53,7 @@ public class ArenaController {
      * Destroy and remove all arenas.
      */
     public void destroy() {
+        joinQueue.clear();
         ready.set(false);
         // Destroy all arenas
         for (Arena arena : arenas.values()) {
@@ -65,6 +71,37 @@ public class ArenaController {
     public boolean isReady() {
         return ready.get() && !arenas.isEmpty();
     }
+
+    /*
+     *  Queue Methods
+     */
+
+    public void joinQueue(Player player) {
+        UUID uuid = player.getUniqueId();
+        if (!joinQueue.contains(uuid)) {
+            joinQueue.add(uuid);
+
+        }
+    }
+
+    public void leaveQueue(UUID uuid) {
+        joinQueue.remove(uuid);
+    }
+
+    public void updateQueue() {
+        for (UUID uuid : joinQueue) {
+            Optional<Arena> arenaOptional = getIdealArena();
+            if (arenaOptional.isPresent()) {
+                PlayerProfile profile = DeathSwap.instance.getPlayerController().get(uuid);
+                profile.attemptArenaJoin(arenaOptional.get());
+            }
+            return;
+        }
+    }
+
+    /*
+     *  Arena Methods
+     */
 
     /**
      * Register a new arena if not present.
@@ -86,6 +123,12 @@ public class ArenaController {
         Arena arena = arenas.remove(id);
         if (arena != null) {
             arena.destroy();
+        }
+
+        // Init new arenas if missing
+        if (arenas.size() < Config.ARENA_COUNT) {
+            initArenas(1);
+//            updateQueue();
         }
     }
 

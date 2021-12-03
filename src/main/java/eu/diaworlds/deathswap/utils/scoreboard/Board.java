@@ -11,6 +11,8 @@ import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 @UtilityClass
 public class Board {
 
@@ -23,8 +25,8 @@ public class Board {
 
         if (!APIScoreboard.hasScore(player)) {
             APIScoreboard scoreboard = APIScoreboard.createScore(player);
-            scoreboard.setTitle(parse(player, Config.SCOREBOARD_TITLE));
-            DList<String> lines = new DList<>(Config.SCOREBOARD_TEXT);
+            scoreboard.setTitle(parse(player, Config.SCOREBOARD_WAITING_TITLE));
+            DList<String> lines = new DList<>(Config.SCOREBOARD_WAITING_TEXT);
             lines.replaceAll(s -> parse(player, s));
             scoreboard.setSlotsFromList(lines);
         }
@@ -37,11 +39,36 @@ public class Board {
     }
 
     public static void update(Player player) {
+        PlayerProfile profile = DeathSwap.instance.getPlayerController().get(player.getUniqueId());
+        Arena arena = profile.getArena();
+
+        String title = "";
+        List<String> lines = new DList<>();
+        if (arena != null) {
+            switch (arena.getState().getPhase()) {
+                case WAITING:
+                    title = parse(player, Config.SCOREBOARD_WAITING_TITLE);
+                    lines = new DList<>(Config.SCOREBOARD_WAITING_TEXT);
+                    break;
+                case STARTING:
+                    title = parse(player, Config.SCOREBOARD_STARTING_TITLE);
+                    lines = new DList<>(Config.SCOREBOARD_STARTING_TEXT);
+                    break;
+                case IN_GAME:
+                    title = parse(player, Config.SCOREBOARD_INGAME_TITLE);
+                    lines = new DList<>(Config.SCOREBOARD_INGAME_TEXT);
+                    break;
+                case ENDING:
+                    title = parse(player, Config.SCOREBOARD_ENDING_TITLE);
+                    lines = new DList<>(Config.SCOREBOARD_ENDING_TEXT);
+                    break;
+            }
+        }
+        lines.replaceAll(s -> parse(player, s));
+
         if (APIScoreboard.hasScore(player)) {
             APIScoreboard scoreboard = APIScoreboard.getByPlayer(player);
-            scoreboard.setTitle(parse(player, Config.SCOREBOARD_TITLE));
-            DList<String> lines = new DList<>(Config.SCOREBOARD_TEXT);
-            lines.replaceAll(s -> parse(player, s));
+            scoreboard.setTitle(title);
             scoreboard.setSlotsFromList(lines);
         }
     }

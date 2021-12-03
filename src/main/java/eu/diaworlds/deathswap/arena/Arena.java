@@ -246,6 +246,7 @@ public class Arena implements PlayerList {
         Location loc = player1.getLocation();
         player1.teleport(player2.getLocation());
         player2.teleport(loc);
+        bc(Config.parse(Config.GAME_SWAPPED), Sound.ENTITY_PLAYER_LEVELUP);
     }
 
     /**

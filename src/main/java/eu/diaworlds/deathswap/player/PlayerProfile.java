@@ -3,8 +3,8 @@ package eu.diaworlds.deathswap.player;
 import eu.diaworlds.deathswap.Config;
 import eu.diaworlds.deathswap.DeathSwap;
 import eu.diaworlds.deathswap.arena.Arena;
+import eu.diaworlds.deathswap.utils.Common;
 import eu.diaworlds.deathswap.utils.Players;
-import eu.diaworlds.deathswap.utils.S;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -59,34 +59,42 @@ public class PlayerProfile {
             arena.onQuit(player);
             arena = null;
         }
+        DeathSwap.instance.getArenaController().leaveQueue(uuid);
         Players.show(player);
     }
 
     /**
      * Attempt to join ideal arena.
      */
-    public void attemptIdealArenaJoin() {
+    public boolean attemptIdealArenaJoin() {
         if (this.arena != null || getPlayer() == null) {
-            return;
+            return false;
         }
+
         Optional<Arena> optionalArena = DeathSwap.instance.getArenaController().getIdealArena();
-        optionalArena.ifPresent(this::attemptArenaJoin);
+        if (optionalArena.isPresent()) {
+            Arena arena = optionalArena.get();
+            return attemptArenaJoin(arena);
+        }
+        return false;
     }
 
     /**
      * Attempt to join an arena.
      */
-    public void attemptArenaJoin(Arena arena) {
+    public boolean attemptArenaJoin(Arena arena) {
         Player player = getPlayer();
         if (this.arena != null || player == null) {
-            return;
+            return false;
         }
 
         this.arena = arena;
         if (this.arena == null || !this.arena.onJoin(player)) {
             this.arena = null;
             DeathSwap.instance.kick(player, Config.parse(Config.ARENA_NO_ARENA_KICK));
+            return false;
         }
+        return true;
     }
 
     /**
@@ -100,7 +108,9 @@ public class PlayerProfile {
         // Join a new arena
         Player player = getPlayer();
         if (this.arena == null && player != null) {
-            attemptIdealArenaJoin();
+            if (attemptIdealArenaJoin()) {
+                Common.tell(player, Config.parse(Config.ARENA_AUTO_JOINED));
+            }
         }
     }
 
