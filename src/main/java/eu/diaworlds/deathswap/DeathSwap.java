@@ -39,7 +39,7 @@ public final class DeathSwap extends JavaPlugin {
 
     @Override
     public void onLoad() {
-//        deleteWorld();
+        this.deleteWorld();
     }
 
     @Override

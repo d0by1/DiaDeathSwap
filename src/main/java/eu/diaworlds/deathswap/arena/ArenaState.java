@@ -99,6 +99,7 @@ public class ArenaState extends Ticked {
                     // Teleport them to spawn and heal them
                     DeathSwap.instance.spawn(p);
                     Players.clear(p);
+                    p.resetTitle();
 
                     Player winnerPlayer;
                     // End with a winner
