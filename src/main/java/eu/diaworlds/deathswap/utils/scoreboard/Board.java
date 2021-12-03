@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
 public class Board {
 
     public static void create(Player player) {
-        // Needs to be on the main thread
+        // Needs to run on the main thread
         if (!Bukkit.isPrimaryThread()) {
             S.sync(() -> create(player));
             return;

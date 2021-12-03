@@ -89,7 +89,7 @@ public class DeadCommand extends DecentCommand {
                 if (player == null) return true;
                 Location location = player.getLocation();
                 // Set player's location as spawn.
-                DeathSwap.instance.setSpawn(location);
+                DeathSwap.instance.setSpawn(location, true);
                 Common.tell(player, Config.PREFIX + "&bSpawn set!");
                 return true;
             };

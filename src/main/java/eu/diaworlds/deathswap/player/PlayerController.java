@@ -2,6 +2,7 @@ package eu.diaworlds.deathswap.player;
 
 import eu.diaworlds.deathswap.Config;
 import eu.diaworlds.deathswap.DeathSwap;
+import eu.diaworlds.deathswap.utils.S;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -56,7 +57,7 @@ public class PlayerController implements Listener {
         if (!playerMap.containsKey(player.getUniqueId())) {
             PlayerProfile playerProfile = new PlayerProfile(player);
             playerMap.put(player.getUniqueId(), playerProfile);
-            playerProfile.onJoin();
+            S.sync(playerProfile::onJoin, 2L);
         }
     }
 

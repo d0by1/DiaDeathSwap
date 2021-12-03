@@ -4,7 +4,6 @@ import eu.diaworlds.deathswap.Config;
 import eu.diaworlds.deathswap.DeathSwap;
 import eu.diaworlds.deathswap.utils.Common;
 import eu.diaworlds.deathswap.utils.LP;
-import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,7 +12,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.world.ChunkUnloadEvent;
 
 public class ArenaListener implements Listener {
 
@@ -38,7 +36,6 @@ public class ArenaListener implements Listener {
         if (parent.getPlayerList().contains(player.getUniqueId()) && parent.getState().isInGame()) {
             Location to = e.getTo();
             if (to != null && !parent.getRegion().isInside(to.getBlockX(), to.getBlockZ())) {
-                e.setCancelled(true);
                 e.setTo(e.getFrom());
             }
         }

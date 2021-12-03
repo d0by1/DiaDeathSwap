@@ -63,7 +63,7 @@ public class ArenaController {
      * @return the status.
      */
     public boolean isReady() {
-        return ready.get();
+        return ready.get() && !arenas.isEmpty();
     }
 
     /**
@@ -95,9 +95,12 @@ public class ArenaController {
      * @return the ideal arena Optional. (There might be no ideal arena)
      */
     public Optional<Arena> getIdealArena() {
-        return arenas.values().stream()
-                .filter(arena -> arena.getState().isWaiting())
-                .min((o1, o2) -> o1.getPlayers().size() >= o2.getPlayers().size() ? 0 : 1);
+        if (isReady()) {
+            return arenas.values().stream()
+                    .filter(arena -> arena.getState().isWaiting())
+                    .min((o1, o2) -> o1.getPlayers().size() >= o2.getPlayers().size() ? 0 : 1);
+        }
+        return Optional.empty();
     }
 
     /**

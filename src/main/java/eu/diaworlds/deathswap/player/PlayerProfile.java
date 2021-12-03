@@ -4,6 +4,7 @@ import eu.diaworlds.deathswap.Config;
 import eu.diaworlds.deathswap.DeathSwap;
 import eu.diaworlds.deathswap.arena.Arena;
 import eu.diaworlds.deathswap.utils.Players;
+import eu.diaworlds.deathswap.utils.S;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -35,12 +36,14 @@ public class PlayerProfile {
      */
     public void onJoin() {
         Player player = getPlayer();
-        if (arena != null || player == null) return;
+        if (arena != null || player == null) {
+            return;
+        }
         Players.hide(player);
         for (String line : Config.JOIN_INFO) {
             player.sendMessage(Config.parse(line));
         }
-        player.teleport(DeathSwap.instance.getSpawn());
+        DeathSwap.instance.spawn(player);
         attemptIdealArenaJoin();
     }
 
@@ -79,10 +82,11 @@ public class PlayerProfile {
             return;
         }
 
-        if ((this.arena = arena).onJoin(player)) {
-            return;
+        this.arena = arena;
+        if (this.arena == null || !this.arena.onJoin(player)) {
+            this.arena = null;
+            DeathSwap.instance.kick(player, Config.parse(Config.ARENA_NO_ARENA_KICK));
         }
-        DeathSwap.instance.kick(player, Config.parse(Config.ARENA_NO_ARENA_KICK));
     }
 
     /**

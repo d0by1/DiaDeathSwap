@@ -38,6 +38,11 @@ public final class DeathSwap extends JavaPlugin {
     }
 
     @Override
+    public void onLoad() {
+//        deleteWorld();
+    }
+
+    @Override
     public void onEnable() {
         Config.CONFIG = CFG.load(Config.class, getConfigFile());
         Common.log("Configuration loaded!");
@@ -55,7 +60,6 @@ public final class DeathSwap extends JavaPlugin {
 
         // Run this when all worlds are ready
         Bukkit.getScheduler().runTask(this, () -> {
-            setSpawn(Locations.asLocation(Config.SPAWN));
             setupWorld();
             Common.log("World is ready!");
         });
@@ -69,7 +73,7 @@ public final class DeathSwap extends JavaPlugin {
         BungeeUtils.destroy();
         this.arenaController.destroy();
         this.playerController.destroy();
-        deleteWorld();
+        this.ticker.destroy();
     }
 
     /**
@@ -96,10 +100,19 @@ public final class DeathSwap extends JavaPlugin {
      *
      * @param spawn the spawn location.
      */
-    public void setSpawn(Location spawn) {
+    public void setSpawn(Location spawn, boolean save) {
         this.spawn = spawn;
-        Config.SPAWN = Locations.asString(spawn, true);
-        Config.save(getConfigFile());
+        if (save) {
+            Config.SPAWN = Locations.asString(spawn, true);
+            Config.save(getConfigFile());
+        }
+    }
+
+    public Location getSpawn() {
+        if (spawn == null) {
+            setSpawn(Locations.asLocation(Config.SPAWN), false);
+        }
+        return spawn;
     }
 
     /**
@@ -155,10 +168,9 @@ public final class DeathSwap extends JavaPlugin {
      */
     public void teleport(Player player, Location location) {
         if (!Bukkit.isPrimaryThread()) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> teleport(player, location));
+            S.sync(() -> teleport(player, location));
             return;
         }
-        Common.debug(location);
         player.teleport(location);
     }
 
@@ -203,8 +215,24 @@ public final class DeathSwap extends JavaPlugin {
     private void deleteWorld() {
         File worldFolder = new File(Bukkit.getWorldContainer(), "world");
         if (worldFolder.exists() && worldFolder.isDirectory()) {
-            worldFolder.delete();
+            Common.log("World deleted: %b", deleteDirectory(worldFolder));
         }
+    }
+
+    private boolean deleteDirectory(File file) {
+        if (file.exists()) {
+            File[] files = file.listFiles();
+            if (files != null) {
+                for (File value : files) {
+                    if (value.isDirectory()) {
+                        deleteDirectory(value);
+                    } else {
+                        value.delete();
+                    }
+                }
+            }
+        }
+        return file.delete();
     }
 
 }

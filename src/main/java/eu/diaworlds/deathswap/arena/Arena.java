@@ -67,9 +67,7 @@ public class Arena implements PlayerList {
      * @param player the player.
      */
     public void center(Player player) {
-        Location center = region.getCenter();
-        DeathSwap.instance.teleport(player, center);
-        DeathSwap.instance.teleport(player, center);
+        DeathSwap.instance.teleport(player, region.getCenter());
     }
 
     /**

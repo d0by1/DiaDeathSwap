@@ -1,6 +1,7 @@
 name: DiaDeathSwap
 version: '${version}'
 main: eu.diaworlds.deathswap.DeathSwap
+load: STARTUP
 api-version: 1.17
 prefix: 'DiaDeathSwap'
 softdepend:

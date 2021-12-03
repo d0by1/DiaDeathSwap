@@ -3,7 +3,6 @@ package eu.diaworlds.deathswap.arena;
 import lombok.Getter;
 import lombok.ToString;
 import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 
