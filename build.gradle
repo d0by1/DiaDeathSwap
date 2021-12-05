@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'eu.diaworlds'
-version = '1.0-BETA'
+version = '1.0.1'
 
 repositories {
     mavenLocal()
