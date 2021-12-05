@@ -46,7 +46,8 @@ public class ArenaListener implements Listener {
         Player player = e.getEntity();
         if (parent.getPlayerList().contains(player.getUniqueId()) && parent.getState().isInGame()) {
             parent.bc(String.format(Config.parse(Config.GAME_PLAYER_DEATH), player.getName()));
-            parent.getState().setWinner(parent.getOtherPlayer(player).getUniqueId());
+            Player otherPlayer = parent.getOtherPlayer(player);
+            parent.getState().setWinner(otherPlayer == null ? null : otherPlayer.getUniqueId());
             parent.getState().setPhase(ArenaPhase.ENDING);
             e.setDeathMessage(null);
         }

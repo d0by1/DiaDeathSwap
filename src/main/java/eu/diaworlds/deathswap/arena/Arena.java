@@ -5,6 +5,7 @@ import eu.diaworlds.deathswap.DeathSwap;
 import eu.diaworlds.deathswap.intent.PlayerList;
 import eu.diaworlds.deathswap.utils.Common;
 import eu.diaworlds.deathswap.utils.Players;
+import eu.diaworlds.deathswap.utils.S;
 import eu.diaworlds.deathswap.utils.collection.DList;
 import eu.diaworlds.deathswap.utils.scoreboard.Board;
 import lombok.Getter;
@@ -152,7 +153,7 @@ public class Arena implements PlayerList {
             Players.clear(player);
             // Make them see each other
             if (players.size() > 1) {
-                this.updatePlayerVisibility();
+                S.sync(this::updatePlayerVisibility);
             }
             // Update scoreboard
             Board.create(player);
