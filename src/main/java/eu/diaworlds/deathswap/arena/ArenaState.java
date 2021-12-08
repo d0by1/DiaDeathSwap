@@ -65,7 +65,7 @@ public class ArenaState extends Ticked {
     public void setPhase(ArenaPhase phase) {
         switch (phase) {
             case WAITING:
-                if (this.phase.ordinal() >= phase.ordinal() + 1) return;
+                if (this.phase.ordinal() >= phase.ordinal() + 2) return;
                 this.phase = phase;
                 shouldTick = false;
                 parent.bc(Config.parse(Config.GAME_START_DELAYED));
